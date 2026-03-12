@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Experiments</title>
+</head>
+
+<body>
+
+<h2>Run Experiment</h2>
+
+<input id="model_id" placeholder="Model ID">
+<br><br>
+
+<input id="version_id" placeholder="Dataset Version ID">
+<br><br>
+
+<input id="accuracy" placeholder="Accuracy">
+<br><br>
+
+<input id="loss" placeholder="Loss">
+<br><br>
+
+<button onclick="runExperiment()">Submit</button>
+
+<script>
+
+async function runExperiment(){
+
+const model_id=document.getElementById("model_id").value
+const version_id=document.getElementById("version_id").value
+const accuracy=document.getElementById("accuracy").value
+const loss=document.getElementById("loss").value
+
+await fetch("http://localhost:5000/experiments/run",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+model_id:model_id,
+version_id:version_id,
+accuracy:accuracy,
+loss:loss
+})
+})
+
+alert("Experiment Stored")
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Register</title>
+</head>
+
+<body>
+
+<h2>Register User</h2>
+
+<input id="name" placeholder="Name">
+<br><br>
+
+<input id="email" placeholder="Email">
+<br><br>
+
+<button onclick="register()">Register</button>
+
+<script>
+
+async function register(){
+
+const name = document.getElementById("name").value
+const email = document.getElementById("email").value
+
+await fetch("http://localhost:5000/users/register",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+name:name,
+email:email
+})
+})
+
+alert("User Registered")
+
+}
+
+</script>
+
+</body>
+</html>
