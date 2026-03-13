@@ -1,20 +1,50 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-<title>Dashboard</title>
+    <meta charset="UTF-8">
+    <title>Dashboard | AI Dataset Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">AI Dataset Manager</span>
+            <a href="/login" class="btn btn-outline-light btn-sm">Register User</a>
+        </div>
+    </nav>
 
-<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Manage Datasets</h5>
+                        <p class="card-text text-muted">Create new datasets and view existing ones.</p>
+                        <a href="/datasets-ui" class="btn btn-primary">Go to Datasets</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold">Manage Models</h5>
+                        <p class="card-text text-muted">Add and view AI algorithms for testing.</p>
+                        <a href="/models-ui" class="btn btn-warning fw-bold text-dark">Go to Models</a>
+                    </div>
+                </div>
+            </div>
 
-<h1>AI Dataset Manager</h1>
-
-<a href="datasets.html">Manage Datasets</a>
-
-<br><br>
-
-<a href="experiments.html">Run Experiments</a>
-
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Run Experiments</h5>
+                        <p class="card-text text-muted">Log model accuracy, loss, and version tracking.</p>
+                        <a href="/experiments-ui" class="btn btn-success">Go to Experiments</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
-
 </html>

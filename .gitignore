@@ -54,3 +54,5 @@ dist/
 # PyCharm settings
 
 .idea/
+
+.env

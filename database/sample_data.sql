@@ -1,33 +1,33 @@
 USE ai_dataset_manager;
 
--- Insert Users
-INSERT INTO Users (name, email)
+-- Insert Users (Forcing IDs 1 and 2)
+INSERT IGNORE INTO Users (user_id, name, email)
 VALUES
-('Alice', 'alice@example.com'),
-('Bob', 'bob@example.com');
+(1, 'Alice', 'alice@example.com'),
+(2, 'Bob', 'bob@example.com');
 
--- Insert Dataset
-INSERT INTO Datasets (dataset_name, description, created_by)
+-- Insert Dataset (Forcing ID 1)
+INSERT IGNORE INTO Datasets (dataset_id, dataset_name, description, created_by)
 VALUES
-('Brain Tumor MRI', 'MRI images dataset', 1);
+(1, 'Brain Tumor MRI', 'MRI images dataset', 1);
 
--- Insert Dataset Version
-INSERT INTO Dataset_Versions (dataset_id, version_number, storage_path)
+-- Insert Dataset Version (Forcing ID 1)
+INSERT IGNORE INTO Dataset_Versions (version_id, dataset_id, version_number, storage_path)
 VALUES
-(1, 1, '/datasets/dataset1/v1');
+(1, 1, 1, '/datasets/dataset1/v1');
 
--- Insert Model
-INSERT INTO Models (model_name, algorithm)
+-- Insert Model (Forcing IDs 1 and 2)
+INSERT IGNORE INTO Models (model_id, model_name, algorithm)
 VALUES
-('CNN_Model', 'CNN'),
-('ResNet_Model', 'ResNet');
+(1, 'CNN_Model', 'CNN'),
+(2, 'ResNet_Model', 'ResNet');
 
--- Insert Experiment
-INSERT INTO Experiments (model_id, version_id, accuracy, loss)
+-- Insert Experiment (Forcing ID 1)
+INSERT IGNORE INTO Experiments (experiment_id, model_id, version_id, accuracy, loss)
 VALUES
-(1, 1, 0.86, 0.20);
+(1, 1, 1, 0.86, 0.20);
 
--- Insert Change Log
-INSERT INTO Dataset_Changes_Log (version_id, changed_by, change_description)
+-- Insert Change Log (Forcing ID 1)
+INSERT IGNORE INTO Dataset_Changes_Log (change_id, version_id, changed_by, change_description)
 VALUES
-(1, 2, 'Removed corrupted images');
+(1, 1, 2, 'Removed corrupted images');

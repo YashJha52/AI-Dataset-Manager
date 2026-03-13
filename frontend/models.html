@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Models | AI Dataset Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">AI Dataset Manager</span>
+            <a href="/" class="btn btn-outline-light btn-sm">Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-warning text-dark fw-bold">Add New Model</div>
+                    <div class="card-body">
+                        <input id="model_name" class="form-control mb-3" placeholder="Model Name (e.g., VGG16_Base)">
+                        <input id="algorithm" class="form-control mb-3" placeholder="Algorithm (e.g., CNN, ResNet)">
+                        <button onclick="createModel()" class="btn btn-warning w-100 fw-bold">Save Model</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-7">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">Available Models</div>
+                    <ul id="model-list" class="list-group list-group-flush">
+                        </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function createModel() {
+            const model_name = document.getElementById("model_name").value;
+            const algorithm = document.getElementById("algorithm").value;
+
+            if (!model_name || !algorithm) {
+                alert("Please fill in both the Model Name and Algorithm.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/models/create", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ model_name, algorithm })
+                });
+
+                if (response.ok) {
+                    alert("Success: Model saved to SQL!");
+                    document.getElementById("model_name").value = '';
+                    document.getElementById("algorithm").value = '';
+                    loadModels(); 
+                } else {
+                    alert("Error: Could not save model.");
+                }
+            } catch (error) {
+                alert("Network error: Make sure your Flask server is running.");
+            }
+        }
+
+        async function loadModels() {
+            try {
+                const res = await fetch("/models/");
+                const models = await res.json();
+                
+                const list = document.getElementById("model-list");
+                list.innerHTML = ""; 
+                
+                if (models.length === 0) {
+                    list.innerHTML = "<li class='list-group-item text-muted'>No models found.</li>";
+                    return;
+                }
+
+                models.forEach(m => {
+                    const li = document.createElement("li");
+                    li.className = "list-group-item d-flex justify-content-between align-items-center";
+                    li.innerHTML = `
+                        <div>
+                            <strong>${m.model_name}</strong>
+                            <span class="badge bg-secondary ms-2">${m.algorithm}</span>
+                        </div>
+                        <span class="text-muted small">ID: ${m.model_id}</span>
+                    `;
+                    list.appendChild(li);
+                });
+            } catch (error) {
+                console.error("Error fetching models:", error);
+            }
+        }
+
+        loadModels();
+    </script>
+</body>
+</html>

@@ -1,5 +1,4 @@
 CREATE DATABASE IF NOT EXISTS ai_dataset_manager;
-
 USE ai_dataset_manager;
 
 -- ========================
@@ -14,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Users (
 -- ========================
 -- Datasets Table
 -- ========================
-CREATE TABLE Datasets (
+CREATE TABLE IF NOT EXISTS Datasets (
     dataset_id INT AUTO_INCREMENT PRIMARY KEY,
     dataset_name VARCHAR(150) NOT NULL,
     description TEXT,
@@ -26,7 +25,7 @@ CREATE TABLE Datasets (
 -- ========================
 -- Dataset Versions
 -- ========================
-CREATE TABLE Dataset_Versions (
+CREATE TABLE IF NOT EXISTS Dataset_Versions (
     version_id INT AUTO_INCREMENT PRIMARY KEY,
     dataset_id INT,
     version_number INT,
@@ -38,7 +37,7 @@ CREATE TABLE Dataset_Versions (
 -- ========================
 -- Models Table
 -- ========================
-CREATE TABLE Models (
+CREATE TABLE IF NOT EXISTS Models (
     model_id INT AUTO_INCREMENT PRIMARY KEY,
     model_name VARCHAR(100),
     algorithm VARCHAR(100)
@@ -47,7 +46,7 @@ CREATE TABLE Models (
 -- ========================
 -- Experiments Table
 -- ========================
-CREATE TABLE Experiments (
+CREATE TABLE IF NOT EXISTS Experiments (
     experiment_id INT AUTO_INCREMENT PRIMARY KEY,
     model_id INT,
     version_id INT,
@@ -61,7 +60,7 @@ CREATE TABLE Experiments (
 -- ========================
 -- Dataset Changes Log
 -- ========================
-CREATE TABLE Dataset_Changes_Log (
+CREATE TABLE IF NOT EXISTS Dataset_Changes_Log (
     change_id INT AUTO_INCREMENT PRIMARY KEY,
     version_id INT,
     changed_by INT,
