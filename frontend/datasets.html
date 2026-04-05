@@ -1,10 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Datasets | AI Dataset Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --primary-color: #6366f1;
+            --primary-hover: #818cf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(30, 41, 59, 0.6);
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a 40%, #020617);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism Navbar */
+        .navbar {
+            background: rgba(15, 23, 42, 0.5) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #a5b4fc, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Premium Glass Card */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            color: var(--text-main);
+        }
+
+        .card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(30, 41, 59, 0.75);
+        }
+
+        .card-header {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-main) !important;
+            padding: 1.25rem 1.5rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card-title {
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
+        }
+
+        /* Forms & Inputs */
+        .form-control {
+            background-color: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            background-color: rgba(15, 23, 42, 0.8);
+            border-color: var(--primary-color);
+            color: var(--text-main);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: rgba(148, 163, 184, 0.6);
+        }
+
+        /* Buttons Update */
+        .btn {
+            border-radius: 10px;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            transition: all 0.3s ease;
+            letter-spacing: 0.025em;
+            text-transform: none;
+        }
+
+        .btn-primary,
+        .btn-info,
+        .btn-success,
+        .btn-warning {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #4f46e5 100%);
+            border: none;
+            color: white !important;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover,
+        .btn-info:hover,
+        .btn-success:hover,
+        .btn-warning:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px -2px rgba(99, 102, 241, 0.5);
+            color: white !important;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            border: none;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px -2px rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-outline-light {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+        }
+
+        .btn-outline-light:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #fff;
+        }
+
+        .btn-outline-primary,
+        .btn-outline-success,
+        .btn-outline-secondary {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+        }
+
+        .btn-outline-primary:hover,
+        .btn-outline-success:hover,
+        .btn-outline-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        /* Generic Background color overrides */
+        .bg-primary,
+        .bg-secondary,
+        .bg-success,
+        .bg-warning,
+        .bg-info,
+        .bg-dark {
+            background: rgba(255, 255, 255, 0.03) !important;
+        }
+
+        .fw-bold {
+            font-weight: 600 !important;
+        }
+
+        .text-dark {
+            color: var(--text-main) !important;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        .list-group-item {
+            background: transparent;
+            border-color: var(--border-color);
+            color: var(--text-main);
+            padding: 1.25rem 1.5rem;
+            transition: background 0.2s;
+        }
+
+        .list-group-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Badges */
+        .badge {
+            font-weight: 500;
+            padding: 0.4em 0.8em;
+            border-radius: 6px;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .badge.bg-light {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: var(--text-main) !important;
+            border-color: transparent !important;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        .col-md-4:nth-child(1) .card {
+            animation-delay: 0.05s;
+        }
+
+        .col-md-4:nth-child(2) .card {
+            animation-delay: 0.15s;
+        }
+
+        .col-md-4:nth-child(3) .card {
+            animation-delay: 0.25s;
+        }
+
+        .col-md-4:nth-child(4) .card {
+            animation-delay: 0.35s;
+        }
+
+        .col-md-5 .card {
+            animation-delay: 0.1s;
+        }
+
+        .col-md-7 .card {
+            animation-delay: 0.2s;
+        }
+    </style>
 </head>
-<body class="bg-light">
+
+<body>
+
     <nav class="navbar navbar-dark bg-dark mb-4">
         <div class="container">
             <span class="navbar-brand mb-0 h1">AI Dataset Manager</span>
@@ -21,7 +282,7 @@
                         <input id="name" class="form-control mb-3" placeholder="Dataset Name">
                         <input id="description" class="form-control mb-3" placeholder="Description">
                         <input id="created_by" class="form-control mb-3" type="number" placeholder="User ID (e.g., 1)">
-                        
+
                         <label class="form-label fw-bold text-muted small">Upload Dataset File</label>
                         <input id="dataset_file" type="file" class="form-control mb-3">
 
@@ -29,12 +290,12 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-7">
                 <div class="card shadow-sm">
                     <div class="card-header bg-secondary text-white">Existing Datasets</div>
                     <ul id="dataset-list" class="list-group list-group-flush">
-                        </ul>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -68,7 +329,7 @@
                     document.getElementById("description").value = '';
                     document.getElementById("created_by").value = '';
                     document.getElementById("dataset_file").value = '';
-                    loadDatasets(); 
+                    loadDatasets();
                 } else {
                     alert("Error: " + result.error);
                 }
@@ -82,8 +343,8 @@
                 const res = await fetch("/datasets/");
                 const datasets = await res.json();
                 const list = document.getElementById("dataset-list");
-                list.innerHTML = ""; 
-                
+                list.innerHTML = "";
+
                 if (datasets.length === 0) {
                     list.innerHTML = "<li class='list-group-item text-muted'>No datasets found.</li>";
                     return;
@@ -133,12 +394,12 @@
             try {
                 const response = await fetch(`/datasets/upload_version/${dataset_id}`, { method: "POST", body: formData });
                 const result = await response.json();
-                
+
                 if (response.status === 200) {
                     alert("🛑 " + result.message);
                 } else if (response.ok) {
                     alert("✅ " + result.message);
-                    loadDatasets(); 
+                    loadDatasets();
                 } else {
                     alert("Error: " + result.error);
                 }
@@ -149,9 +410,9 @@
 
         async function promptLogChange(version_id) {
             const userId = prompt("Enter your User ID to log this change:");
-            if (!userId) return; 
+            if (!userId) return;
             const description = prompt("What did you change? (e.g., 'Removed empty rows')");
-            if (!description) return; 
+            if (!description) return;
 
             try {
                 const response = await fetch("/datasets/log_change", {
@@ -162,7 +423,7 @@
                 const result = await response.json();
                 if (response.ok) alert("Success: " + result.message);
                 else alert("Error.");
-            } catch (error) {}
+            } catch (error) { }
         }
 
         async function viewHistory(dataset_id) {
@@ -179,7 +440,7 @@
                     message += `[v${h.version_number}] - ${date}\nUser: ${h.user_name}\nChange: ${h.change_description}\n\n`;
                 });
                 alert(message);
-            } catch (error) {}
+            } catch (error) { }
         }
 
         async function deleteDataset(dataset_id) {
@@ -203,4 +464,5 @@
         loadDatasets();
     </script>
 </body>
+
 </html>

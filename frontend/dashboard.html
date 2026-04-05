@@ -1,50 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Dashboard | AI Dataset Manager</title>
+    <!-- Google Fonts for Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --primary-color: #6366f1;
+            --primary-hover: #818cf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(30, 41, 59, 0.6);
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a 40%, #020617);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism Navbar */
+        .navbar {
+            background: rgba(15, 23, 42, 0.5) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #a5b4fc, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Premium Glass Card */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            color: var(--text-main);
+        }
+
+        .card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(30, 41, 59, 0.75);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card-title {
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
+        }
+
+        /* Buttons Update */
+        .btn {
+            border-radius: 10px;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            transition: all 0.3s ease;
+            letter-spacing: 0.025em;
+            text-transform: none;
+        }
+
+        .btn-primary,
+        .btn-info,
+        .btn-success,
+        .btn-warning {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #4f46e5 100%);
+            border: none;
+            color: white !important;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover,
+        .btn-info:hover,
+        .btn-success:hover,
+        .btn-warning:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px -2px rgba(99, 102, 241, 0.5);
+            color: white !important;
+        }
+
+        .btn-outline-light {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+        }
+
+        .btn-outline-light:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #fff;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        .col-md-4:nth-child(1) .card {
+            animation-delay: 0.05s;
+        }
+
+        .col-md-4:nth-child(2) .card {
+            animation-delay: 0.15s;
+        }
+
+        .col-md-4:nth-child(3) .card {
+            animation-delay: 0.25s;
+        }
+
+        .col-md-4:nth-child(4) .card {
+            animation-delay: 0.35s;
+        }
+    </style>
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-dark bg-dark mb-4">
+
+<body>
+    <nav class="navbar navbar-dark mb-5">
         <div class="container">
             <span class="navbar-brand mb-0 h1">AI Dataset Manager</span>
-            <a href="/login" class="btn btn-outline-light btn-sm">Register User</a>
+            <a href="login.html" class="btn btn-outline-light btn-sm">Register User</a>
         </div>
     </nav>
 
     <div class="container">
         <div class="row">
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm h-100">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
                     <div class="card-body text-center">
-                        <h5 class="card-title">Manage Datasets</h5>
+                        <h5 class="card-title text-primary">Manage Datasets</h5>
                         <p class="card-text text-muted">Create new datasets and view existing ones.</p>
-                        <a href="/datasets-ui" class="btn btn-primary">Go to Datasets</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Manage Models</h5>
-                        <p class="card-text text-muted">Add and view AI algorithms for testing.</p>
-                        <a href="/models-ui" class="btn btn-warning fw-bold text-dark">Go to Models</a>
+                        <a href="datasets.html" class="btn btn-primary w-100 mt-3">Go to Datasets</a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm h-100">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
                     <div class="card-body text-center">
-                        <h5 class="card-title">Run Experiments</h5>
-                        <p class="card-text text-muted">Log model accuracy, loss, and version tracking.</p>
-                        <a href="/experiments-ui" class="btn btn-success">Go to Experiments</a>
+                        <h5 class="card-title text-warning">Manage Models</h5>
+                        <p class="card-text text-muted">Add and view AI algorithms for testing.</p>
+                        <a href="models.html" class="btn btn-warning w-100 mt-3">Go to Models</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-info">Manage Versions</h5>
+                        <p class="card-text text-muted">Track dataset iterations and file paths.</p>
+                        <a href="versions.html" class="btn btn-info w-100 mt-3">Go to Versions</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-success">Run Experiments</h5>
+                        <p class="card-text text-muted">Log model accuracy, loss, and tracking.</p>
+                        <a href="experiments.html" class="btn btn-success w-100 mt-3">Go to Experiments</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>
