@@ -4,177 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Datasets | AI Dataset Manager</title>
-    <meta name="description" content="Upload, version, and manage AI training datasets with SHA-256 change detection.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --primary-color: #6366f1;
-            --primary-hover: #818cf8;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: rgba(255,255,255,0.1);
-            --glass-bg: rgba(30,41,59,0.6);
-        }
-        * { box-sizing: border-box; }
-        body {
-            background: radial-gradient(ellipse at 70% 0%, #1e1b4b 0%, #0f172a 40%, #020617 100%);
-            background-attachment: fixed;
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-        }
-        .navbar {
-            background: rgba(15,23,42,0.5) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1.1rem 0;
-        }
-        .navbar-brand {
-            font-weight: 800; letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #a5b4fc, #c084fc);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .btn-back {
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.15);
-            color: var(--text-main); border-radius: 10px;
-            padding: 0.45rem 1rem; font-size: 0.85rem;
-            font-weight: 500; transition: all 0.2s; text-decoration: none;
-        }
-        .btn-back:hover { background: rgba(255,255,255,0.12); color:#fff; border-color: rgba(255,255,255,0.3); }
+        :root{--primary-color:#6366f1;--primary-hover:#818cf8;--text-main:#f8fafc;--text-muted:#94a3b8;--border-color:rgba(255,255,255,0.1);--glass-bg:rgba(30,41,59,0.6);}
+        *{box-sizing:border-box;}
+        body{background:radial-gradient(ellipse at 70% 0%,#1e1b4b 0%,#0f172a 40%,#020617 100%);background-attachment:fixed;color:var(--text-main);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;}
+        .navbar{background:rgba(15,23,42,0.5)!important;backdrop-filter:blur(12px);border-bottom:1px solid var(--border-color);padding:1.1rem 0;}
+        .navbar-brand{font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#a5b4fc,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .btn-back{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:var(--text-main);border-radius:10px;padding:0.45rem 1rem;font-size:0.85rem;font-weight:500;transition:all 0.2s;text-decoration:none;}
+        .btn-back:hover{background:rgba(255,255,255,0.12);color:#fff;}
 
-        .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color); border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-            overflow: hidden; color: var(--text-main);
-            animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0;
-        }
-        .col-md-5 .card { animation-delay: 0.05s; }
-        .col-md-7 .card { animation-delay: 0.15s; }
-        .card-header {
-            background: rgba(255,255,255,0.03) !important;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 600; color: var(--text-main) !important;
-            padding: 1.1rem 1.5rem; letter-spacing: 0.5px;
-            text-transform: uppercase; font-size: 0.82rem;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .card-body { padding: 1.75rem; }
+        /* ── Session Bar ── */
+        .session-bar{background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1.75rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;animation:fadeUp 0.5s forwards;}
+        .session-bar label{font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;}
+        .session-bar .form-control{background:rgba(15,23,42,0.6);border:1px solid rgba(99,102,241,0.3);color:var(--text-main);border-radius:10px;padding:0.55rem 0.9rem;font-size:0.88rem;max-width:140px;}
+        .session-bar .form-control:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(99,102,241,0.2);outline:none;background:rgba(15,23,42,0.8);}
+        .btn-load{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;border-radius:10px;padding:0.55rem 1.1rem;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+        .btn-load:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(99,102,241,0.4);}
+        .session-info{display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;}
+        .role-badge{display:inline-flex;align-items:center;gap:0.35rem;padding:0.3rem 0.85rem;border-radius:100px;font-size:0.78rem;font-weight:700;border:1px solid;}
+        .role-badge.lead{background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.35);color:#fde68a;}
+        .role-badge.developer{background:rgba(56,189,248,0.12);border-color:rgba(56,189,248,0.3);color:#7dd3fc;}
+        .user-name-badge{font-size:0.88rem;font-weight:600;}
 
-        .form-control {
-            background-color: rgba(15,23,42,0.5);
-            border: 1px solid var(--border-color);
-            color: var(--text-main); border-radius: 10px;
-            padding: 0.7rem 1rem; transition: all 0.2s;
-        }
-        .form-control:focus {
-            background-color: rgba(15,23,42,0.8);
-            border-color: var(--primary-color); color: var(--text-main);
-            box-shadow: 0 0 0 3px rgba(99,102,241,0.25); outline: none;
-        }
-        .form-control::placeholder { color: rgba(148,163,184,0.6); }
-        .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        /* ── Cards ── */
+        .card{background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border-color);border-radius:16px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);overflow:hidden;color:var(--text-main);animation:fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0;}
+        .col-md-5 .card{animation-delay:0.05s;}.col-md-7 .card{animation-delay:0.15s;}
+        .card-header{background:rgba(255,255,255,0.03)!important;border-bottom:1px solid var(--border-color);font-weight:600;color:var(--text-main)!important;padding:1.1rem 1.5rem;letter-spacing:0.5px;text-transform:uppercase;font-size:0.82rem;display:flex;align-items:center;justify-content:space-between;}
+        .card-body{padding:1.75rem;}
+        .form-label{font-size:0.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;}
+        .form-control{background-color:rgba(15,23,42,0.5);border:1px solid var(--border-color);color:var(--text-main);border-radius:10px;padding:0.7rem 1rem;transition:all 0.2s;}
+        .form-control:focus{background-color:rgba(15,23,42,0.8);border-color:var(--primary-color);color:var(--text-main);box-shadow:0 0 0 3px rgba(99,102,241,0.25);outline:none;}
+        .form-control::placeholder{color:rgba(148,163,184,0.6);}
+        .form-select{background-color:rgba(15,23,42,0.5);border:1px solid var(--border-color);color:var(--text-main);border-radius:10px;padding:0.7rem 1rem;transition:all 0.2s;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");}
+        .form-select:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(99,102,241,0.25);outline:none;background-color:rgba(15,23,42,0.8);}
+        .form-select option{background:#1e293b;color:var(--text-main);}
 
-        .btn-primary-grad {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #4f46e5 100%);
-            border: none; color: white; border-radius: 10px;
-            font-weight: 600; padding: 0.7rem 1.2rem;
-            transition: all 0.3s; width: 100%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-        }
-        .btn-primary-grad:hover:not(:disabled) {
-            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
-            transform: translateY(-2px); box-shadow: 0 6px 15px -2px rgba(99,102,241,0.5);
-        }
-        .btn-primary-grad:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-grad{background:linear-gradient(135deg,var(--primary-color) 0%,#4f46e5 100%);border:none;color:white;border-radius:10px;font-weight:600;padding:0.7rem 1.2rem;transition:all 0.3s;width:100%;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;}
+        .btn-grad:hover:not(:disabled){background:linear-gradient(135deg,var(--primary-hover) 0%,var(--primary-color) 100%);transform:translateY(-2px);box-shadow:0 6px 15px -2px rgba(99,102,241,0.5);}
+        .btn-grad:disabled{opacity:0.6;cursor:not-allowed;}
 
-        .btn-sm-action {
-            border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05);
-            color: var(--text-muted); border-radius: 8px; padding: 0.35rem 0.75rem;
-            font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;
-        }
-        .btn-sm-action:hover { background: rgba(255,255,255,0.1); color: var(--text-main); }
-        .btn-danger-sm {
-            border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.1);
-            color: #fca5a5; border-radius: 8px; padding: 0.35rem 0.75rem;
-            font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;
-        }
-        .btn-danger-sm:hover { background: rgba(239,68,68,0.25); color: #fff; }
+        .btn-sm-action{border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:var(--text-muted);border-radius:8px;padding:0.35rem 0.75rem;font-size:0.78rem;font-weight:500;cursor:pointer;transition:all 0.2s;}
+        .btn-sm-action:hover{background:rgba(255,255,255,0.1);color:var(--text-main);}
+        .btn-danger-sm{border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.1);color:#fca5a5;border-radius:8px;padding:0.35rem 0.75rem;font-size:0.78rem;font-weight:500;cursor:pointer;transition:all 0.2s;}
+        .btn-danger-sm:hover{background:rgba(239,68,68,0.25);color:#fff;}
+        .btn-assign{border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.1);color:#fde68a;border-radius:8px;padding:0.35rem 0.75rem;font-size:0.78rem;font-weight:500;cursor:pointer;transition:all 0.2s;}
+        .btn-assign:hover{background:rgba(245,158,11,0.2);color:#fff;}
 
-        /* Search bar */
-        .search-wrap { position: relative; margin-bottom: 1rem; }
-        .search-wrap .form-control { padding-left: 2.5rem; }
-        .search-icon { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; }
+        /* Search */
+        .search-wrap{position:relative;margin-bottom:1rem;}
+        .search-wrap .form-control{padding-left:2.5rem;}
+        .search-icon{position:absolute;left:0.85rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:0.9rem;pointer-events:none;}
 
-        /* Dataset list items */
-        .dataset-item {
-            border-bottom: 1px solid var(--border-color);
-            padding: 1.1rem 1.5rem; transition: background 0.2s;
-        }
-        .dataset-item:last-child { border-bottom: none; }
-        .dataset-item:hover { background: rgba(255,255,255,0.02); }
-        .dataset-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.2rem; }
-        .dataset-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.6rem; }
-        .dataset-meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
-        .chip {
-            display: inline-flex; align-items: center; gap: 0.3rem;
-            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 100px; padding: 0.2rem 0.65rem;
-            font-size: 0.73rem; color: var(--text-muted); font-weight: 500;
-        }
-        .chip.version { background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.3); color: #a5b4fc; }
-        .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        /* Dataset Items */
+        .dataset-item{border-bottom:1px solid var(--border-color);padding:1.1rem 1.5rem;transition:background 0.2s;}
+        .dataset-item:last-child{border-bottom:none;}
+        .dataset-item:hover{background:rgba(255,255,255,0.02);}
+        .dataset-name{font-weight:700;font-size:0.95rem;margin-bottom:0.2rem;}
+        .dataset-desc{font-size:0.82rem;color:var(--text-muted);margin-bottom:0.6rem;}
+        .dataset-meta{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;}
+        .chip{display:inline-flex;align-items:center;gap:0.3rem;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:0.2rem 0.65rem;font-size:0.73rem;color:var(--text-muted);font-weight:500;}
+        .chip.version{background:rgba(99,102,241,0.15);border-color:rgba(99,102,241,0.3);color:#a5b4fc;}
+        .chip.assigned-by{background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.25);color:#fde68a;}
+        .assignees-wrap{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.5rem;}
+        .assignee-chip{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);color:#7dd3fc;border-radius:100px;padding:0.18rem 0.6rem 0.18rem 0.5rem;font-size:0.72rem;font-weight:600;}
+        .assignee-chip button{background:none;border:none;color:rgba(125,211,252,0.6);cursor:pointer;padding:0;font-size:0.7rem;line-height:1;transition:color 0.2s;}
+        .assignee-chip button:hover{color:#ef4444;}
+        .actions{display:flex;gap:0.5rem;flex-wrap:wrap;}
 
-        /* History modal */
-        .modal-content {
-            background: #1e293b; border: 1px solid var(--border-color);
-            border-radius: 20px; color: var(--text-main);
-        }
-        .modal-header { border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem; }
-        .modal-title { font-weight: 700; font-size: 1rem; }
-        .btn-close { filter: invert(1); }
-        .modal-body { padding: 1.5rem; max-height: 70vh; overflow-y: auto; }
-        .timeline { position: relative; padding-left: 1.5rem; }
-        .timeline::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background: rgba(99,102,241,0.3); border-radius:2px; }
-        .tl-item { position: relative; margin-bottom: 1.25rem; }
-        .tl-dot { position:absolute; left:-1.88rem; top:0.3rem; width:10px; height:10px; border-radius:50%; background:var(--primary-color); border:2px solid #1e293b; }
-        .tl-version { font-size:0.72rem; font-weight:700; color: #a5b4fc; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.15rem; }
-        .tl-desc { font-size:0.85rem; color:var(--text-main); margin-bottom:0.2rem; }
-        .tl-meta { font-size:0.75rem; color:var(--text-muted); }
+        /* Lock overlay for dev without assignment */
+        .empty-state{text-align:center;padding:3rem 1rem;color:var(--text-muted);}
+        .empty-state .icon{font-size:2.5rem;margin-bottom:0.75rem;}
 
-        /* CSV Preview modal */
-        .preview-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .preview-table th { background: rgba(99,102,241,0.15); color: #a5b4fc; font-weight:600; padding:0.5rem 0.75rem; border-bottom:1px solid var(--border-color); text-align:left; white-space:nowrap; }
-        .preview-table td { padding:0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); color:var(--text-muted); }
-        .preview-table tr:hover td { background:rgba(255,255,255,0.02); color:var(--text-main); }
-        .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border-color); }
+        /* Modal */
+        .modal-content{background:#1e293b;border:1px solid var(--border-color);border-radius:20px;color:var(--text-main);}
+        .modal-header{border-bottom:1px solid var(--border-color);padding:1.25rem 1.5rem;}
+        .modal-title{font-weight:700;font-size:1rem;}
+        .btn-close{filter:invert(1);}
+        .modal-body{padding:1.5rem;max-height:70vh;overflow-y:auto;}
 
-        /* Empty state */
-        .empty-state { text-align:center; padding: 3rem 1rem; color: var(--text-muted); }
-        .empty-state .icon { font-size: 2.5rem; margin-bottom:0.75rem; }
-        .empty-state p { font-size: 0.88rem; }
+        /* Timeline */
+        .timeline{position:relative;padding-left:1.5rem;}
+        .timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:rgba(99,102,241,0.3);border-radius:2px;}
+        .tl-item{position:relative;margin-bottom:1.25rem;}
+        .tl-dot{position:absolute;left:-1.88rem;top:0.3rem;width:10px;height:10px;border-radius:50%;background:var(--primary-color);border:2px solid #1e293b;}
+        .tl-version{font-size:0.72rem;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.15rem;}
+        .tl-desc{font-size:0.85rem;color:var(--text-main);margin-bottom:0.2rem;}
+        .tl-meta{font-size:0.75rem;color:var(--text-muted);}
 
-        /* Spinner */
-        .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation: spin 0.7s linear infinite; display:inline-block; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* Preview Table */
+        .preview-table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+        .preview-table th{background:rgba(99,102,241,0.15);color:#a5b4fc;font-weight:600;padding:0.5rem 0.75rem;border-bottom:1px solid var(--border-color);text-align:left;white-space:nowrap;}
+        .preview-table td{padding:0.5rem 0.75rem;border-bottom:1px solid rgba(255,255,255,0.05);color:var(--text-muted);}
+        .preview-table tr:hover td{background:rgba(255,255,255,0.02);color:var(--text-main);}
+        .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border-color);}
 
-        /* Toast */
-        #toast-container { position:fixed; bottom:2rem; right:2rem; z-index:9999; display:flex; flex-direction:column; gap:0.75rem; }
-        .toast-msg { padding:0.85rem 1.25rem; border-radius:12px; font-size:0.88rem; font-weight:500; color:#fff; backdrop-filter:blur(12px); animation:slideIn 0.3s ease; max-width:320px; box-shadow:0 8px 24px rgba(0,0,0,0.3); }
-        .toast-msg.success { background:rgba(34,197,94,0.85);  border:1px solid rgba(34,197,94,0.4); }
-        .toast-msg.error   { background:rgba(239,68,68,0.85);  border:1px solid rgba(239,68,68,0.4); }
-        .toast-msg.info    { background:rgba(99,102,241,0.85); border:1px solid rgba(99,102,241,0.4); }
-        .toast-msg.warning { background:rgba(234,179,8,0.85);  border:1px solid rgba(234,179,8,0.4); }
+        .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;}
+        #toast-container{position:fixed;bottom:2rem;right:2rem;z-index:9999;display:flex;flex-direction:column;gap:0.75rem;}
+        .toast-msg{padding:0.85rem 1.25rem;border-radius:12px;font-size:0.88rem;font-weight:500;color:#fff;backdrop-filter:blur(12px);animation:slideIn 0.3s ease;max-width:320px;box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+        .toast-msg.success{background:rgba(34,197,94,0.85);border:1px solid rgba(34,197,94,0.4);}
+        .toast-msg.error{background:rgba(239,68,68,0.85);border:1px solid rgba(239,68,68,0.4);}
+        .toast-msg.info{background:rgba(99,102,241,0.85);border:1px solid rgba(99,102,241,0.4);}
+        .toast-msg.warning{background:rgba(234,179,8,0.85);border:1px solid rgba(234,179,8,0.4);}
 
-        @keyframes fadeUp  { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes slideIn { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes spin{to{transform:rotate(360deg)}}
     </style>
 </head>
 <body>
@@ -187,41 +123,106 @@
 </nav>
 
 <div class="container mb-5">
+
+    <!-- ── Session Bar ── -->
+    <div class="session-bar">
+        <label>Your User ID</label>
+        <input id="session-user-id" class="form-control" type="number" placeholder="e.g. 1" style="max-width:130px;">
+        <button class="btn-load" onclick="loadSession()">Load My View</button>
+        <div class="session-info" id="session-info" style="display:none;">
+            <span class="user-name-badge" id="session-name"></span>
+            <span class="role-badge" id="session-role-badge"></span>
+        </div>
+        <span style="font-size:0.78rem;color:var(--text-muted);margin-left:auto;">
+            Don't have a User ID? <a href="login.html" style="color:#a5b4fc;font-weight:600;">Register →</a>
+        </span>
+    </div>
+
     <div class="row">
-        <!-- Create Dataset -->
+        <!-- ── Left: Create Dataset (Lead only) / Assigned info (Dev) ── -->
         <div class="col-md-5 mb-4">
-            <div class="card">
+            <!-- LEAD: Create Dataset Form -->
+            <div class="card" id="create-card">
                 <div class="card-header">📦 Create New Dataset</div>
                 <div class="card-body">
                     <label class="form-label">Dataset Name</label>
                     <input id="name" class="form-control mb-3" placeholder="e.g. Protein Solubility v1">
                     <label class="form-label">Description</label>
                     <input id="description" class="form-control mb-3" placeholder="Brief description">
-                    <label class="form-label">User ID</label>
+                    <label class="form-label">Your User ID (Lead)</label>
                     <input id="created_by" class="form-control mb-3" type="number" placeholder="e.g. 1">
                     <label class="form-label">Dataset File (CSV / JSON)</label>
                     <input id="dataset_file" type="file" class="form-control mb-4" accept=".csv,.json,.tsv,.txt">
-                    <button id="create-btn" onclick="createDataset()" class="btn-primary-grad">
+                    <button id="create-btn" onclick="createDataset()" class="btn-grad">
                         <span id="create-btn-text">⬆ Upload &amp; Create</span>
                     </button>
                 </div>
             </div>
+
+            <!-- DEV: Info Card -->
+            <div class="card" id="dev-info-card" style="display:none;">
+                <div class="card-header">💻 Developer Access</div>
+                <div class="card-body">
+                    <p style="font-size:0.88rem;color:var(--text-muted);line-height:1.7;margin:0;">
+                        You can see only the datasets assigned to you by a Team Lead.<br><br>
+                        You can <strong>upload new versions</strong>, <strong>log changes</strong>, and <strong>preview</strong> your assigned datasets.<br><br>
+                        Contact your Team Lead to get access to additional datasets.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Default: Prompt card -->
+            <div class="card" id="default-card">
+                <div class="card-header">👋 Getting Started</div>
+                <div class="card-body">
+                    <p style="font-size:0.88rem;color:var(--text-muted);line-height:1.7;margin:0;">
+                        Enter your <strong>User ID</strong> above and click <strong>Load My View</strong> to see your personalised datasets.<br><br>
+                        Don't have one? <a href="login.html" style="color:#a5b4fc;font-weight:600;">Register here →</a>
+                    </p>
+                </div>
+            </div>
         </div>
 
-        <!-- Dataset List -->
+        <!-- ── Right: Dataset List ── -->
         <div class="col-md-7">
             <div class="card">
                 <div class="card-header">
-                    <span>Existing Datasets</span>
-                    <span id="dataset-count" class="chip">0 datasets</span>
+                    <span id="list-title">Datasets</span>
+                    <span id="dataset-count" class="chip">—</span>
                 </div>
-                <div class="card-body pb-2 pt-2">
+                <div class="card-body pb-2 pt-2" id="search-area" style="display:none;">
                     <div class="search-wrap">
                         <span class="search-icon">🔍</span>
                         <input id="search-input" class="form-control" placeholder="Search datasets..." oninput="debounceSearch()">
                     </div>
                 </div>
-                <div id="dataset-list"></div>
+                <div id="dataset-list">
+                    <div class="empty-state"><div class="icon">👆</div><p>Enter your User ID above to load datasets.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Modals ── -->
+
+<!-- Assign Dataset Modal (Lead only) -->
+<div class="modal fade" id="assignModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">🔑 Assign Dataset</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="assign-dataset-name" style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;"></p>
+                <label class="form-label">Assign to Developer</label>
+                <select id="assign-dev-select" class="form-select mb-4">
+                    <option value="">— Select developer —</option>
+                </select>
+                <button id="confirm-assign-btn" class="btn-grad" onclick="confirmAssign()">
+                    <span id="assign-btn-text">✅ Assign Dataset</span>
+                </button>
             </div>
         </div>
     </div>
@@ -235,9 +236,7 @@
                 <span class="modal-title">📖 Change History</span>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div id="history-content"><div class="empty-state"><div class="icon">🔄</div><p>Loading history...</p></div></div>
-            </div>
+            <div class="modal-body"><div id="history-content"></div></div>
         </div>
     </div>
 </div>
@@ -252,13 +251,13 @@
             </div>
             <div class="modal-body">
                 <p style="font-size:0.8rem;color:var(--text-muted);">Showing first 10 rows of the latest version.</p>
-                <div id="preview-content"><div class="empty-state"><div class="icon">⏳</div><p>Loading preview...</p></div></div>
+                <div id="preview-content"></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Version Upload User ID Modal -->
+<!-- Version Upload Modal -->
 <div class="modal fade" id="uploadVersionModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -269,7 +268,7 @@
             <div class="modal-body">
                 <label class="form-label">Your User ID</label>
                 <input id="version-user-id" class="form-control mb-3" type="number" placeholder="e.g. 1">
-                <button id="confirm-version-btn" class="btn-primary-grad">Confirm Upload</button>
+                <button id="confirm-version-btn" class="btn-grad">Confirm Upload</button>
             </div>
         </div>
     </div>
@@ -278,228 +277,312 @@
 <div id="toast-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // ── Toast ──────────────────────────────────────────────────────────────────
-    function showToast(message, type = 'info') {
-        const c = document.getElementById('toast-container');
-        const t = document.createElement('div');
-        t.className = `toast-msg ${type}`;
-        t.textContent = message;
-        c.appendChild(t);
-        setTimeout(() => {
-            t.style.cssText = 'opacity:0;transform:translateX(30px);transition:all 0.3s;';
-            setTimeout(() => t.remove(), 300);
-        }, 3500);
+
+// ─── State ─────────────────────────────────────────────────────────────────
+let currentUser = null;   // { user_id, name, role }
+let allDevUsers = [];     // list of all developer users for assign dropdown
+let pendingAssignDatasetId = null;
+let pendingVersionDatasetId = null;
+let pendingVersionFile      = null;
+
+// ─── Toast ──────────────────────────────────────────────────────────────────
+function showToast(message, type='info') {
+    const c=document.getElementById('toast-container');
+    const t=document.createElement('div');
+    t.className=`toast-msg ${type}`;t.textContent=message;c.appendChild(t);
+    setTimeout(()=>{t.style.cssText='opacity:0;transform:translateX(30px);transition:all 0.3s;';setTimeout(()=>t.remove(),300);},3500);
+}
+
+function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ─── Session Load ────────────────────────────────────────────────────────────
+async function loadSession() {
+    const userId = document.getElementById('session-user-id').value.trim();
+    if (!userId) { showToast('Enter your User ID first.', 'error'); return; }
+
+    try {
+        const res  = await fetch(`/users/${userId}`);
+        const user = await res.json();
+        if (!res.ok) { showToast('User not found. Check your User ID.', 'error'); return; }
+
+        currentUser = user;
+
+        // Update session bar
+        document.getElementById('session-info').style.display = 'flex';
+        document.getElementById('session-name').textContent   = user.name;
+        const rb = document.getElementById('session-role-badge');
+        rb.textContent = user.role === 'lead' ? '🔑 Team Lead' : '💻 Developer';
+        rb.className   = `role-badge ${user.role}`;
+
+        // Switch card panes
+        document.getElementById('default-card').style.display = 'none';
+        if (user.role === 'lead') {
+            document.getElementById('create-card').style.display = 'block';
+            document.getElementById('dev-info-card').style.display = 'none';
+            document.getElementById('created_by').value = user.user_id;
+            document.getElementById('search-area').style.display = 'block';
+            document.getElementById('list-title').textContent = 'All Datasets';
+            // Load all developers for the assign dropdown
+            await loadAllDevUsers();
+            loadDatasets();
+        } else {
+            document.getElementById('create-card').style.display = 'none';
+            document.getElementById('dev-info-card').style.display = 'block';
+            document.getElementById('search-area').style.display = 'none';
+            document.getElementById('list-title').textContent = 'My Assigned Datasets';
+            loadMyDatasets();
+        }
+    } catch { showToast('Network error — is the server running?', 'error'); }
+}
+
+// ─── Load developer users for assign dropdown ────────────────────────────────
+async function loadAllDevUsers() {
+    try {
+        const res   = await fetch('/users/');
+        const users = await res.json();
+        allDevUsers = users.filter(u => u.role === 'developer');
+    } catch { allDevUsers = []; }
+}
+
+// ─── Render dataset list ─────────────────────────────────────────────────────
+async function loadDatasets(query='') {
+    const url = query ? `/datasets/search?q=${encodeURIComponent(query)}` : '/datasets/';
+    renderDatasets(await fetchJSON(url), 'lead');
+}
+
+async function loadMyDatasets() {
+    renderDatasets(await fetchJSON(`/datasets/my/${currentUser.user_id}`), 'developer');
+}
+
+async function fetchJSON(url) {
+    const list = document.getElementById('dataset-list');
+    list.innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Loading...</p></div>';
+    try {
+        const res = await fetch(url);
+        return await res.json();
+    } catch { showToast('Failed to load datasets.', 'error'); return []; }
+}
+
+async function renderDatasets(datasets, role) {
+    const list = document.getElementById('dataset-list');
+    document.getElementById('dataset-count').textContent =
+        `${datasets.length} dataset${datasets.length!==1?'s':''}`;
+
+    if (!datasets.length) {
+        list.innerHTML = role==='developer'
+            ? '<div class="empty-state"><div class="icon">📭</div><p>No datasets assigned to you yet.<br>Ask your Team Lead to assign you some.</p></div>'
+            : '<div class="empty-state"><div class="icon">📭</div><p>No datasets found. Create one!</p></div>';
+        return;
     }
+    list.innerHTML = '';
 
-    // ── Button loading state ───────────────────────────────────────────────────
-    function setLoading(btnId, textId, loading, label) {
-        const btn = document.getElementById(btnId);
-        const txt = document.getElementById(textId);
-        btn.disabled = loading;
-        txt.innerHTML = loading ? '<span class="spinner"></span> Working...' : label;
-    }
+    for (const d of datasets) {
+        const div      = document.createElement('div');
+        div.className  = 'dataset-item';
+        const file     = d.storage_path || 'No file';
+        const isCSV    = /\.(csv|tsv|txt)$/i.test(file);
 
-    // ── Create Dataset ─────────────────────────────────────────────────────────
-    async function createDataset() {
-        const name        = document.getElementById('name').value.trim();
-        const description = document.getElementById('description').value.trim();
-        const created_by  = document.getElementById('created_by').value.trim();
-        const fileInput   = document.getElementById('dataset_file').files[0];
-
-        if (!name || !created_by || !fileInput) {
-            showToast('Dataset name, User ID, and a file are required.', 'error');
-            return;
+        // For leads: fetch current assignees
+        let assigneeHtml = '';
+        if (role === 'lead') {
+            const assignees = await fetchJSON(`/datasets/assignments/${d.dataset_id}`);
+            if (assignees.length > 0) {
+                const chips = assignees.map(a =>
+                    `<span class="assignee-chip">💻 ${escHtml(a.name)}
+                     <button title="Remove assignment" onclick="removeAssignment(${a.assignment_id},${d.dataset_id})">✕</button>
+                     </span>`
+                ).join('');
+                assigneeHtml = `<div class="assignees-wrap" id="assignees-${d.dataset_id}">${chips}</div>`;
+            } else {
+                assigneeHtml = `<div class="assignees-wrap" id="assignees-${d.dataset_id}"><span style="font-size:0.75rem;color:var(--text-muted);">Not assigned yet</span></div>`;
+            }
+        } else {
+            // Developer: show who assigned it
+            assigneeHtml = d.assigned_by_name
+                ? `<span class="chip assigned-by">🔑 Assigned by ${escHtml(d.assigned_by_name)} · ${escHtml(d.assigned_at||'')}</span><br style="margin-bottom:0.4rem;">`
+                : '';
         }
 
-        setLoading('create-btn', 'create-btn-text', true);
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('description', description);
-        formData.append('created_by', created_by);
-        formData.append('file', fileInput);
+        const leadActions = role==='lead' ? `
+            <button class="btn-assign"     onclick="openAssignModal(${d.dataset_id}, '${escHtml(d.dataset_name)}')">🔑 Assign</button>
+            <button class="btn-danger-sm ms-auto" onclick="deleteDataset(${d.dataset_id})">🗑 Delete</button>` : '';
 
-        try {
-            const res    = await fetch('/datasets/create', { method: 'POST', body: formData });
-            const result = await res.json();
-            if (res.ok) {
-                showToast('✅ ' + result.message, 'success');
-                ['name','description','created_by','dataset_file'].forEach(id => document.getElementById(id).value = '');
-                loadDatasets();
-            } else {
-                showToast('❌ ' + result.error, 'error');
-            }
-        } catch { showToast('Network error — is the server running?', 'error'); }
-        finally { setLoading('create-btn', 'create-btn-text', false, '⬆ Upload &amp; Create'); }
+        div.innerHTML = `
+            <div class="dataset-name">${escHtml(d.dataset_name)}</div>
+            <div class="dataset-desc">${escHtml(d.description||'No description')}</div>
+            <div class="dataset-meta">
+                <span class="chip version">⚡ v${d.version_number||1}</span>
+                <span class="chip">📄 ${escHtml(file)}</span>
+                <span class="chip">🆔 ${d.dataset_id}</span>
+            </div>
+            ${assigneeHtml}
+            <div class="actions">
+                <input type="file" id="upf_${d.dataset_id}" style="display:none;" accept=".csv,.json,.tsv,.txt" onchange="triggerVersionUpload(${d.dataset_id})">
+                <button class="btn-sm-action" onclick="document.getElementById('upf_${d.dataset_id}').click()">⬆ New Version</button>
+                ${isCSV ? `<button class="btn-sm-action" onclick="previewDataset(${d.dataset_id},'${escHtml(d.dataset_name)}')">👁 Preview</button>` : ''}
+                <button class="btn-sm-action" onclick="promptLogChange(${d.version_id})">✏️ Manual Log</button>
+                <button class="btn-sm-action" onclick="viewHistory(${d.dataset_id})">📖 History</button>
+                ${leadActions}
+            </div>`;
+        list.appendChild(div);
     }
+}
 
-    // ── Load & Render Datasets ─────────────────────────────────────────────────
-    async function loadDatasets(query = '') {
-        const url  = query ? `/datasets/search?q=${encodeURIComponent(query)}` : '/datasets/';
-        const list = document.getElementById('dataset-list');
-        list.innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Loading datasets...</p></div>';
-        try {
-            const res      = await fetch(url);
-            const datasets = await res.json();
-            document.getElementById('dataset-count').textContent = `${datasets.length} dataset${datasets.length !== 1 ? 's' : ''}`;
-            if (datasets.length === 0) {
-                list.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No datasets found.</p></div>';
-                return;
-            }
-            list.innerHTML = '';
-            datasets.forEach(d => {
-                const div    = document.createElement('div');
-                div.className = 'dataset-item';
-                const file   = d.storage_path || 'No file';
-                const isCSV  = file.toLowerCase().endsWith('.csv') || file.toLowerCase().endsWith('.tsv') || file.toLowerCase().endsWith('.txt');
-                div.innerHTML = `
-                    <div class="dataset-name">${escHtml(d.dataset_name)}</div>
-                    <div class="dataset-desc">${escHtml(d.description || 'No description')}</div>
-                    <div class="dataset-meta">
-                        <span class="chip version">⚡ v${d.version_number || 1}</span>
-                        <span class="chip">📄 ${escHtml(file)}</span>
-                        <span class="chip">🆔 ${d.dataset_id}</span>
-                    </div>
-                    <div class="actions">
-                        <input type="file" id="upf_${d.dataset_id}" style="display:none;" accept=".csv,.json,.tsv,.txt" onchange="triggerVersionUpload(${d.dataset_id})">
-                        <button class="btn-sm-action" onclick="document.getElementById('upf_${d.dataset_id}').click()">⬆ New Version</button>
-                        ${isCSV ? `<button class="btn-sm-action" onclick="previewDataset(${d.dataset_id}, '${escHtml(d.dataset_name)}')">👁 Preview</button>` : ''}
-                        <button class="btn-sm-action" onclick="promptLogChange(${d.version_id})">✏️ Manual Log</button>
-                        <button class="btn-sm-action" onclick="viewHistory(${d.dataset_id})">📖 History</button>
-                        <button class="btn-danger-sm ms-auto" onclick="deleteDataset(${d.dataset_id})">🗑 Delete</button>
-                    </div>`;
-                list.appendChild(div);
-            });
-        } catch { showToast('Failed to load datasets.', 'error'); }
-    }
+// ─── Assign Modal ─────────────────────────────────────────────────────────────
+function openAssignModal(datasetId, datasetName) {
+    pendingAssignDatasetId = datasetId;
+    const sel = document.getElementById('assign-dev-select');
+    sel.innerHTML = allDevUsers.length
+        ? '<option value="">— Select developer —</option>' + allDevUsers.map(u=>`<option value="${u.user_id}">${escHtml(u.name)} (ID: ${u.user_id})</option>`).join('')
+        : '<option value="">No developers registered yet</option>';
+    document.getElementById('assign-dataset-name').textContent = `Dataset: "${datasetName}"`;
+    new bootstrap.Modal(document.getElementById('assignModal')).show();
+}
 
-    // ── Version Upload ─────────────────────────────────────────────────────────
-    let pendingVersionDatasetId = null;
-    let pendingVersionFile      = null;
+async function confirmAssign() {
+    const devId = document.getElementById('assign-dev-select').value;
+    if (!devId) { showToast('Please select a developer.', 'error'); return; }
 
-    function triggerVersionUpload(dataset_id) {
-        const file = document.getElementById(`upf_${dataset_id}`).files[0];
-        if (!file) return;
-        pendingVersionDatasetId = dataset_id;
-        pendingVersionFile      = file;
-        document.getElementById('version-user-id').value = '';
-        new bootstrap.Modal(document.getElementById('uploadVersionModal')).show();
-        document.getElementById('confirm-version-btn').onclick = confirmVersionUpload;
-    }
+    const btn = document.getElementById('confirm-assign-btn');
+    const txt = document.getElementById('assign-btn-text');
+    btn.disabled=true; txt.innerHTML='<span class="spinner"></span> Assigning...';
 
-    async function confirmVersionUpload() {
-        const userId = document.getElementById('version-user-id').value.trim();
-        if (!userId) { showToast('User ID is required.', 'error'); return; }
-        const btn = document.getElementById('confirm-version-btn');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> Uploading...';
+    try {
+        const res    = await fetch('/datasets/assign', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ dataset_id: pendingAssignDatasetId, assigned_to: +devId, assigned_by: currentUser.user_id })
+        });
+        const result = await res.json();
+        bootstrap.Modal.getInstance(document.getElementById('assignModal')).hide();
+        showToast(res.ok ? '✅ '+result.message : '❌ '+result.error, res.ok?'success':'error');
+        if (res.ok) loadDatasets(document.getElementById('search-input').value.trim());
+    } catch { showToast('Network error.', 'error'); }
+    finally { btn.disabled=false; txt.innerHTML='✅ Assign Dataset'; }
+}
 
-        const formData = new FormData();
-        formData.append('file', pendingVersionFile);
-        formData.append('user_id', userId);
-        try {
-            const res    = await fetch(`/datasets/upload_version/${pendingVersionDatasetId}`, { method: 'POST', body: formData });
-            const result = await res.json();
-            bootstrap.Modal.getInstance(document.getElementById('uploadVersionModal')).hide();
-            if (res.status === 200) {
-                showToast('🛑 ' + result.message, 'warning');
-            } else if (res.ok) {
-                showToast('✅ ' + result.message, 'success');
-                loadDatasets();
-            } else {
-                showToast('❌ ' + result.error, 'error');
-            }
-        } catch { showToast('Network error.', 'error'); }
-        finally { btn.disabled = false; btn.innerHTML = 'Confirm Upload'; }
-    }
+async function removeAssignment(assignmentId, datasetId) {
+    if (!confirm('Remove this developer\'s assignment?')) return;
+    try {
+        const res    = await fetch(`/datasets/unassign/${assignmentId}`, {method:'DELETE'});
+        const result = await res.json();
+        showToast(res.ok ? '✅ Assignment removed.' : '❌ '+result.error, res.ok?'success':'error');
+        if (res.ok) loadDatasets(document.getElementById('search-input').value.trim());
+    } catch { showToast('Network error.', 'error'); }
+}
 
-    // ── Manual Log ────────────────────────────────────────────────────────────
-    async function promptLogChange(version_id) {
-        const userId = prompt('Enter your User ID to log this change:');
-        if (!userId) return;
-        const description = prompt('Describe what changed (e.g., "Removed empty rows"):');
-        if (!description) return;
-        try {
-            const res = await fetch('/datasets/log_change', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ version_id, user_id: userId, description })
-            });
-            const result = await res.json();
-            showToast(res.ok ? '✅ ' + result.message : '❌ ' + result.error, res.ok ? 'success' : 'error');
-        } catch { showToast('Network error.', 'error'); }
-    }
+// ─── Create Dataset ───────────────────────────────────────────────────────────
+async function createDataset() {
+    const name        = document.getElementById('name').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const created_by  = document.getElementById('created_by').value.trim();
+    const fileInput   = document.getElementById('dataset_file').files[0];
+    if (!name||!created_by||!fileInput) { showToast('Name, User ID, and file are required.','error'); return; }
 
-    // ── View History (Timeline Modal) ─────────────────────────────────────────
-    async function viewHistory(dataset_id) {
-        const modal = new bootstrap.Modal(document.getElementById('historyModal'));
-        document.getElementById('history-content').innerHTML = '<div class="empty-state"><div class="icon">🔄</div><p>Loading...</p></div>';
-        modal.show();
-        try {
-            const res     = await fetch(`/datasets/history/${dataset_id}`);
-            const history = await res.json();
-            const content = document.getElementById('history-content');
-            if (history.length === 0) {
-                content.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No changes logged yet.</p></div>';
-                return;
-            }
-            const html = history.map(h => {
-                const date = new Date(h.change_date).toLocaleString();
-                const user = h.user_name || 'System';
-                return `<div class="tl-item">
-                    <div class="tl-dot"></div>
-                    <div class="tl-version">v${h.version_number}</div>
-                    <div class="tl-desc">${escHtml(h.change_description)}</div>
-                    <div class="tl-meta">👤 ${escHtml(user)} &nbsp;·&nbsp; 🕐 ${date}</div>
-                </div>`;
-            }).join('');
-            content.innerHTML = `<div class="timeline">${html}</div>`;
-        } catch { document.getElementById('history-content').innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>Failed to load history.</p></div>'; }
-    }
+    const btn=document.getElementById('create-btn');
+    const txt=document.getElementById('create-btn-text');
+    btn.disabled=true; txt.innerHTML='<span class="spinner"></span> Uploading...';
 
-    // ── CSV Preview Modal ─────────────────────────────────────────────────────
-    async function previewDataset(dataset_id, name) {
-        document.getElementById('preview-title').textContent = `— ${name}`;
-        const modal = new bootstrap.Modal(document.getElementById('previewModal'));
-        document.getElementById('preview-content').innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Loading preview...</p></div>';
-        modal.show();
-        try {
-            const res  = await fetch(`/datasets/preview/${dataset_id}`);
-            const data = await res.json();
-            if (!res.ok) { document.getElementById('preview-content').innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${data.error}</p></div>`; return; }
-            if (!data.rows || data.rows.length === 0) { document.getElementById('preview-content').innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No rows found or file is not a valid CSV.</p></div>'; return; }
-            const headers = data.headers;
-            const rows    = data.rows;
-            const thead   = headers.map(h => `<th>${escHtml(h)}</th>`).join('');
-            const tbody   = rows.map(r => `<tr>${headers.map(h => `<td>${escHtml(String(r[h] ?? ''))}</td>`).join('')}</tr>`).join('');
-            document.getElementById('preview-content').innerHTML = `<div class="table-wrap"><table class="preview-table"><thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody></table></div>`;
-        } catch { document.getElementById('preview-content').innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>Failed to load preview.</p></div>'; }
-    }
+    const fd = new FormData();
+    fd.append('name',name); fd.append('description',description);
+    fd.append('created_by',created_by); fd.append('file',fileInput);
+    try {
+        const res=await fetch('/datasets/create',{method:'POST',body:fd});
+        const result=await res.json();
+        if(res.ok){
+            showToast('✅ '+result.message,'success');
+            ['name','description','dataset_file'].forEach(id=>document.getElementById(id).value='');
+            loadDatasets();
+        } else { showToast('❌ '+result.error,'error'); }
+    } catch { showToast('Network error.','error'); }
+    finally { btn.disabled=false; txt.innerHTML='⬆ Upload &amp; Create'; }
+}
 
-    // ── Delete Dataset ────────────────────────────────────────────────────────
-    async function deleteDataset(dataset_id) {
-        if (!confirm('⚠️ Permanently delete this dataset, all versions, files, and experiments?')) return;
-        try {
-            const res    = await fetch(`/datasets/delete/${dataset_id}`, { method: 'DELETE' });
-            const result = await res.json();
-            showToast(res.ok ? '✅ ' + result.message : '❌ ' + result.error, res.ok ? 'success' : 'error');
-            if (res.ok) loadDatasets();
-        } catch { showToast('Network error.', 'error'); }
-    }
+// ─── Version Upload ───────────────────────────────────────────────────────────
+function triggerVersionUpload(dataset_id) {
+    const file=document.getElementById(`upf_${dataset_id}`).files[0];
+    if(!file)return;
+    pendingVersionDatasetId=dataset_id;
+    pendingVersionFile=file;
+    document.getElementById('version-user-id').value = currentUser ? currentUser.user_id : '';
+    new bootstrap.Modal(document.getElementById('uploadVersionModal')).show();
+    document.getElementById('confirm-version-btn').onclick=confirmVersionUpload;
+}
+async function confirmVersionUpload(){
+    const userId=document.getElementById('version-user-id').value.trim();
+    if(!userId){showToast('User ID is required.','error');return;}
+    const btn=document.getElementById('confirm-version-btn');
+    btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Uploading...';
+    const fd=new FormData();fd.append('file',pendingVersionFile);fd.append('user_id',userId);
+    try{
+        const res=await fetch(`/datasets/upload_version/${pendingVersionDatasetId}`,{method:'POST',body:fd});
+        const result=await res.json();
+        bootstrap.Modal.getInstance(document.getElementById('uploadVersionModal')).hide();
+        if(res.status===200){showToast('🛑 '+result.message,'warning');}
+        else if(res.ok){showToast('✅ '+result.message,'success');currentUser?.role==='lead'?loadDatasets():loadMyDatasets();}
+        else{showToast('❌ '+result.error,'error');}
+    }catch{showToast('Network error.','error');}
+    finally{btn.disabled=false;btn.innerHTML='Confirm Upload';}
+}
 
-    // ── Debounced Search ──────────────────────────────────────────────────────
-    let searchTimer = null;
-    function debounceSearch() {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(() => {
-            loadDatasets(document.getElementById('search-input').value.trim());
-        }, 350);
-    }
+// ─── Manual Log ────────────────────────────────────────────────────────────────
+async function promptLogChange(version_id){
+    const userId=prompt('Enter your User ID to log this change:');if(!userId)return;
+    const description=prompt('Describe what changed:');if(!description)return;
+    try{
+        const res=await fetch('/datasets/log_change',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({version_id,user_id:userId,description})});
+        const result=await res.json();
+        showToast(res.ok?'✅ '+result.message:'❌ '+result.error,res.ok?'success':'error');
+    }catch{showToast('Network error.','error');}
+}
 
-    // ── Utility ───────────────────────────────────────────────────────────────
-    function escHtml(str) {
-        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
+// ─── History Modal ──────────────────────────────────────────────────────────────
+async function viewHistory(dataset_id){
+    const modal=new bootstrap.Modal(document.getElementById('historyModal'));
+    document.getElementById('history-content').innerHTML='<div class="empty-state"><div class="icon">⏳</div><p>Loading...</p></div>';
+    modal.show();
+    try{
+        const res=await fetch(`/datasets/history/${dataset_id}`);
+        const history=await res.json();
+        if(!history.length){document.getElementById('history-content').innerHTML='<div class="empty-state"><div class="icon">📭</div><p>No changes logged yet.</p></div>';return;}
+        const html=history.map(h=>`<div class="tl-item"><div class="tl-dot"></div><div class="tl-version">v${h.version_number}</div><div class="tl-desc">${escHtml(h.change_description)}</div><div class="tl-meta">👤 ${escHtml(h.user_name||'System')} · 🕐 ${new Date(h.change_date).toLocaleString()}</div></div>`).join('');
+        document.getElementById('history-content').innerHTML=`<div class="timeline">${html}</div>`;
+    }catch{document.getElementById('history-content').innerHTML='<div class="empty-state"><div class="icon">❌</div><p>Failed to load.</p></div>';}
+}
 
-    loadDatasets();
+// ─── CSV Preview ────────────────────────────────────────────────────────────────
+async function previewDataset(dataset_id,name){
+    document.getElementById('preview-title').textContent=`— ${name}`;
+    const modal=new bootstrap.Modal(document.getElementById('previewModal'));
+    document.getElementById('preview-content').innerHTML='<div class="empty-state"><div class="icon">⏳</div><p>Loading preview...</p></div>';
+    modal.show();
+    try{
+        const res=await fetch(`/datasets/preview/${dataset_id}`);
+        const data=await res.json();
+        if(!res.ok){document.getElementById('preview-content').innerHTML=`<div class="empty-state"><div class="icon">⚠️</div><p>${data.error}</p></div>`;return;}
+        if(!data.rows?.length){document.getElementById('preview-content').innerHTML='<div class="empty-state"><div class="icon">📭</div><p>No rows or not a valid CSV.</p></div>';return;}
+        const thead=data.headers.map(h=>`<th>${escHtml(h)}</th>`).join('');
+        const tbody=data.rows.map(r=>`<tr>${data.headers.map(h=>`<td>${escHtml(String(r[h]??''))}</td>`).join('')}</tr>`).join('');
+        document.getElementById('preview-content').innerHTML=`<div class="table-wrap"><table class="preview-table"><thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody></table></div>`;
+    }catch{document.getElementById('preview-content').innerHTML='<div class="empty-state"><div class="icon">❌</div><p>Failed to load preview.</p></div>';}
+}
+
+// ─── Delete Dataset ──────────────────────────────────────────────────────────────
+async function deleteDataset(dataset_id){
+    if(!confirm('⚠️ Permanently delete this dataset, all versions, files, assignments, and experiments?'))return;
+    try{
+        const res=await fetch(`/datasets/delete/${dataset_id}`,{method:'DELETE'});
+        const result=await res.json();
+        showToast(res.ok?'✅ '+result.message:'❌ '+result.error,res.ok?'success':'error');
+        if(res.ok)loadDatasets(document.getElementById('search-input').value.trim());
+    }catch{showToast('Network error.','error');}
+}
+
+// ─── Debounced Search (Lead only) ────────────────────────────────────────────────
+let searchTimer=null;
+function debounceSearch(){
+    clearTimeout(searchTimer);
+    searchTimer=setTimeout(()=>loadDatasets(document.getElementById('search-input').value.trim()),350);
+}
 </script>
 </body>
 </html>
