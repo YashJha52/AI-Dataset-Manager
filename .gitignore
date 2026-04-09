@@ -1,58 +1,33 @@
-# Python cache
+# Environment & secrets
+.env
 
-**pycache**/
-*.pyc
+# Uploaded dataset files (binary/user data — don't commit)
+uploads/
+
+# Python
+__pycache__/
+*.py[cod]
 *.pyo
 *.pyd
-
-# Virtual environment
-
-dbms/
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
 venv/
 env/
+.venv/
 
-# Environment variables
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
-.env
-
-# Jupyter Notebook checkpoints
-
-.ipynb_checkpoints/
-
-# Mac system files
-
+# OS
 .DS_Store
+Thumbs.db
 
 # Logs
-
 *.log
-
-# Model files (optional if large)
-
-*.h5
-*.pkl
-*.joblib
-
-# Dataset files
-
-data/
-datasets/
-
-# Streamlit cache
-
-.streamlit/
-
-# Build files
-
-build/
-dist/
-
-# VS Code settings
-
-.vscode/
-
-# PyCharm settings
-
-.idea/
-
-.env
