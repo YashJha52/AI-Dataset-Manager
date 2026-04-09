@@ -1,4 +1,5 @@
 import os
+import csv
 import hashlib
 from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
@@ -41,7 +42,7 @@ def create_dataset():
             "INSERT INTO Datasets (dataset_name, description, created_by) VALUES (%s, %s, %s)",
             (name, description, created_by)
         )
-        dataset_id = cursor.lastrowid 
+        dataset_id = cursor.lastrowid
 
         cursor.execute(
             "INSERT INTO Dataset_Versions (dataset_id, version_number, storage_path) VALUES (%s, %s, %s)",
@@ -67,9 +68,9 @@ def upload_version(dataset_id):
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("""
-            SELECT version_id, version_number, storage_path 
-            FROM Dataset_Versions 
-            WHERE dataset_id = %s 
+            SELECT version_id, version_number, storage_path
+            FROM Dataset_Versions
+            WHERE dataset_id = %s
             ORDER BY version_number DESC LIMIT 1
         """, (dataset_id,))
         latest_version = cursor.fetchone()
@@ -86,13 +87,12 @@ def upload_version(dataset_id):
         old_hash = get_file_hash(old_path)
 
         if new_hash == old_hash:
-            os.remove(temp_path) 
+            os.remove(temp_path)
             return jsonify({"message": "Upload rejected: This file is identical to the current version."}), 200
 
         new_version_number = latest_version['version_number'] + 1
         final_filename = f"v{new_version_number}_{filename}"
         final_path = os.path.join(UPLOAD_FOLDER, final_filename)
-        
         os.rename(temp_path, final_path)
 
         cursor.execute(
@@ -119,8 +119,8 @@ def get_datasets():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     query = """
-    SELECT d.dataset_id, d.dataset_name, d.description, d.created_by, 
-           MAX(v.version_id) as version_id, MAX(v.version_number) as version_number, 
+    SELECT d.dataset_id, d.dataset_name, d.description, d.created_by,
+           MAX(v.version_id) as version_id, MAX(v.version_number) as version_number,
            (SELECT storage_path FROM Dataset_Versions WHERE dataset_id = d.dataset_id ORDER BY version_number DESC LIMIT 1) as storage_path
     FROM Datasets d
     LEFT JOIN Dataset_Versions v ON d.dataset_id = v.dataset_id
@@ -131,6 +131,79 @@ def get_datasets():
     cursor.close()
     conn.close()
     return jsonify(datasets)
+
+@dataset_routes.route("/search", methods=["GET"])
+def search_datasets():
+    """Full-text search using MySQL MATCH...AGAINST"""
+    q = request.args.get("q", "").strip()
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        if not q:
+            cursor.execute("""
+                SELECT d.dataset_id, d.dataset_name, d.description, d.created_by,
+                       MAX(v.version_id) as version_id, MAX(v.version_number) as version_number,
+                       (SELECT storage_path FROM Dataset_Versions WHERE dataset_id = d.dataset_id ORDER BY version_number DESC LIMIT 1) as storage_path
+                FROM Datasets d
+                LEFT JOIN Dataset_Versions v ON d.dataset_id = v.dataset_id
+                GROUP BY d.dataset_id
+            """)
+        else:
+            cursor.execute("""
+                SELECT d.dataset_id, d.dataset_name, d.description, d.created_by,
+                       MAX(v.version_id) as version_id, MAX(v.version_number) as version_number,
+                       (SELECT storage_path FROM Dataset_Versions WHERE dataset_id = d.dataset_id ORDER BY version_number DESC LIMIT 1) as storage_path
+                FROM Datasets d
+                LEFT JOIN Dataset_Versions v ON d.dataset_id = v.dataset_id
+                WHERE MATCH(d.dataset_name, d.description) AGAINST (%s IN NATURAL LANGUAGE MODE)
+                   OR d.dataset_name LIKE %s
+                GROUP BY d.dataset_id
+            """, (q, f"%{q}%"))
+        results = cursor.fetchall()
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@dataset_routes.route("/preview/<int:dataset_id>", methods=["GET"])
+def preview_dataset(dataset_id):
+    """Return first 10 rows of the latest version of a CSV dataset."""
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute(
+            "SELECT storage_path FROM Dataset_Versions WHERE dataset_id=%s ORDER BY version_number DESC LIMIT 1",
+            (dataset_id,)
+        )
+        row = cursor.fetchone()
+        if not row:
+            return jsonify({"error": "Dataset not found"}), 404
+
+        file_path = os.path.join(UPLOAD_FOLDER, row['storage_path'])
+        if not os.path.exists(file_path):
+            return jsonify({"error": "File not found on disk"}), 404
+
+        rows = []
+        headers = []
+        try:
+            with open(file_path, newline='', encoding='utf-8', errors='replace') as f:
+                reader = csv.DictReader(f)
+                headers = reader.fieldnames or []
+                for i, r in enumerate(reader):
+                    if i >= 10:
+                        break
+                    rows.append(dict(r))
+        except Exception:
+            return jsonify({"error": "Could not parse file as CSV"}), 400
+
+        return jsonify({"headers": headers, "rows": rows})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 @dataset_routes.route("/log_change", methods=["POST"])
 def log_change():
@@ -157,7 +230,7 @@ def get_history(dataset_id):
     query = """
     SELECT c.change_description, c.change_date, u.name as user_name, v.version_number
     FROM Dataset_Changes_Log c
-    JOIN Users u ON c.changed_by = u.user_id
+    LEFT JOIN Users u ON c.changed_by = u.user_id
     JOIN Dataset_Versions v ON c.version_id = v.version_id
     WHERE v.dataset_id = %s
     ORDER BY c.change_date DESC

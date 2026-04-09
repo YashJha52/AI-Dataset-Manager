@@ -1,468 +1,505 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Datasets | AI Dataset Manager</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Upload, version, and manage AI training datasets with SHA-256 change detection.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0f172a;
-            --surface-color: #1e293b;
             --primary-color: #6366f1;
             --primary-hover: #818cf8;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --glass-bg: rgba(30, 41, 59, 0.6);
+            --border-color: rgba(255,255,255,0.1);
+            --glass-bg: rgba(30,41,59,0.6);
         }
-
+        * { box-sizing: border-box; }
         body {
-            background: radial-gradient(circle at top right, #1e1b4b, #0f172a 40%, #020617);
+            background: radial-gradient(ellipse at 70% 0%, #1e1b4b 0%, #0f172a 40%, #020617 100%);
             background-attachment: fixed;
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             min-height: 100vh;
         }
-
-        /* Glassmorphism Navbar */
         .navbar {
-            background: rgba(15, 23, 42, 0.5) !important;
+            background: rgba(15,23,42,0.5) !important;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
-            padding: 1.25rem 0;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 1.1rem 0;
         }
-
         .navbar-brand {
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            font-weight: 800; letter-spacing: -0.5px;
             background: linear-gradient(135deg, #a5b4fc, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
+        .btn-back {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--text-main); border-radius: 10px;
+            padding: 0.45rem 1rem; font-size: 0.85rem;
+            font-weight: 500; transition: all 0.2s; text-decoration: none;
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.12); color:#fff; border-color: rgba(255,255,255,0.3); }
 
-        /* Premium Glass Card */
         .card {
             background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            color: var(--text-main);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color); border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            overflow: hidden; color: var(--text-main);
+            animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0;
         }
-
-        .card:hover {
-            transform: translateY(-4px) scale(1.01);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            background: rgba(30, 41, 59, 0.75);
-        }
-
+        .col-md-5 .card { animation-delay: 0.05s; }
+        .col-md-7 .card { animation-delay: 0.15s; }
         .card-header {
-            background: rgba(255, 255, 255, 0.03) !important;
+            background: rgba(255,255,255,0.03) !important;
             border-bottom: 1px solid var(--border-color);
-            font-weight: 600;
-            color: var(--text-main) !important;
-            padding: 1.25rem 1.5rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            font-size: 0.85rem;
+            font-weight: 600; color: var(--text-main) !important;
+            padding: 1.1rem 1.5rem; letter-spacing: 0.5px;
+            text-transform: uppercase; font-size: 0.82rem;
+            display: flex; align-items: center; justify-content: space-between;
         }
+        .card-body { padding: 1.75rem; }
 
-        .card-body {
-            padding: 2rem;
-        }
-
-        .card-title {
-            font-weight: 600;
-            letter-spacing: -0.025em;
-            margin-bottom: 1rem;
-        }
-
-        /* Forms & Inputs */
         .form-control {
-            background-color: rgba(15, 23, 42, 0.5);
+            background-color: rgba(15,23,42,0.5);
             border: 1px solid var(--border-color);
-            color: var(--text-main);
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
-            transition: all 0.2s;
+            color: var(--text-main); border-radius: 10px;
+            padding: 0.7rem 1rem; transition: all 0.2s;
         }
-
         .form-control:focus {
-            background-color: rgba(15, 23, 42, 0.8);
-            border-color: var(--primary-color);
-            color: var(--text-main);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
-            outline: none;
+            background-color: rgba(15,23,42,0.8);
+            border-color: var(--primary-color); color: var(--text-main);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.25); outline: none;
         }
+        .form-control::placeholder { color: rgba(148,163,184,0.6); }
+        .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
-        .form-control::placeholder {
-            color: rgba(148, 163, 184, 0.6);
-        }
-
-        /* Buttons Update */
-        .btn {
-            border-radius: 10px;
-            font-weight: 500;
-            padding: 0.6rem 1.2rem;
-            transition: all 0.3s ease;
-            letter-spacing: 0.025em;
-            text-transform: none;
-        }
-
-        .btn-primary,
-        .btn-info,
-        .btn-success,
-        .btn-warning {
+        .btn-primary-grad {
             background: linear-gradient(135deg, var(--primary-color) 0%, #4f46e5 100%);
-            border: none;
-            color: white !important;
-            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+            border: none; color: white; border-radius: 10px;
+            font-weight: 600; padding: 0.7rem 1.2rem;
+            transition: all 0.3s; width: 100%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
         }
-
-        .btn-primary:hover,
-        .btn-info:hover,
-        .btn-success:hover,
-        .btn-warning:hover {
+        .btn-primary-grad:hover:not(:disabled) {
             background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px -2px rgba(99, 102, 241, 0.5);
-            color: white !important;
+            transform: translateY(-2px); box-shadow: 0 6px 15px -2px rgba(99,102,241,0.5);
         }
+        .btn-primary-grad:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-            border: none;
+        .btn-sm-action {
+            border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05);
+            color: var(--text-muted); border-radius: 8px; padding: 0.35rem 0.75rem;
+            font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;
         }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px -2px rgba(239, 68, 68, 0.5);
+        .btn-sm-action:hover { background: rgba(255,255,255,0.1); color: var(--text-main); }
+        .btn-danger-sm {
+            border: 1px solid rgba(239,68,68,0.3); background: rgba(239,68,68,0.1);
+            color: #fca5a5; border-radius: 8px; padding: 0.35rem 0.75rem;
+            font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: all 0.2s;
         }
+        .btn-danger-sm:hover { background: rgba(239,68,68,0.25); color: #fff; }
 
-        .btn-outline-light {
-            border-color: rgba(255, 255, 255, 0.2);
-            color: var(--text-main);
+        /* Search bar */
+        .search-wrap { position: relative; margin-bottom: 1rem; }
+        .search-wrap .form-control { padding-left: 2.5rem; }
+        .search-icon { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; }
+
+        /* Dataset list items */
+        .dataset-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.1rem 1.5rem; transition: background 0.2s;
         }
-
-        .btn-outline-light:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
-            color: #fff;
+        .dataset-item:last-child { border-bottom: none; }
+        .dataset-item:hover { background: rgba(255,255,255,0.02); }
+        .dataset-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.2rem; }
+        .dataset-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.6rem; }
+        .dataset-meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+        .chip {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 100px; padding: 0.2rem 0.65rem;
+            font-size: 0.73rem; color: var(--text-muted); font-weight: 500;
         }
+        .chip.version { background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.3); color: #a5b4fc; }
+        .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
-        .btn-outline-primary,
-        .btn-outline-success,
-        .btn-outline-secondary {
-            border-color: rgba(255, 255, 255, 0.2);
-            color: var(--text-main);
+        /* History modal */
+        .modal-content {
+            background: #1e293b; border: 1px solid var(--border-color);
+            border-radius: 20px; color: var(--text-main);
         }
+        .modal-header { border-bottom: 1px solid var(--border-color); padding: 1.25rem 1.5rem; }
+        .modal-title { font-weight: 700; font-size: 1rem; }
+        .btn-close { filter: invert(1); }
+        .modal-body { padding: 1.5rem; max-height: 70vh; overflow-y: auto; }
+        .timeline { position: relative; padding-left: 1.5rem; }
+        .timeline::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background: rgba(99,102,241,0.3); border-radius:2px; }
+        .tl-item { position: relative; margin-bottom: 1.25rem; }
+        .tl-dot { position:absolute; left:-1.88rem; top:0.3rem; width:10px; height:10px; border-radius:50%; background:var(--primary-color); border:2px solid #1e293b; }
+        .tl-version { font-size:0.72rem; font-weight:700; color: #a5b4fc; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.15rem; }
+        .tl-desc { font-size:0.85rem; color:var(--text-main); margin-bottom:0.2rem; }
+        .tl-meta { font-size:0.75rem; color:var(--text-muted); }
 
-        .btn-outline-primary:hover,
-        .btn-outline-success:hover,
-        .btn-outline-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
+        /* CSV Preview modal */
+        .preview-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .preview-table th { background: rgba(99,102,241,0.15); color: #a5b4fc; font-weight:600; padding:0.5rem 0.75rem; border-bottom:1px solid var(--border-color); text-align:left; white-space:nowrap; }
+        .preview-table td { padding:0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); color:var(--text-muted); }
+        .preview-table tr:hover td { background:rgba(255,255,255,0.02); color:var(--text-main); }
+        .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border-color); }
 
-        /* Generic Background color overrides */
-        .bg-primary,
-        .bg-secondary,
-        .bg-success,
-        .bg-warning,
-        .bg-info,
-        .bg-dark {
-            background: rgba(255, 255, 255, 0.03) !important;
-        }
+        /* Empty state */
+        .empty-state { text-align:center; padding: 3rem 1rem; color: var(--text-muted); }
+        .empty-state .icon { font-size: 2.5rem; margin-bottom:0.75rem; }
+        .empty-state p { font-size: 0.88rem; }
 
-        .fw-bold {
-            font-weight: 600 !important;
-        }
+        /* Spinner */
+        .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation: spin 0.7s linear infinite; display:inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .text-dark {
-            color: var(--text-main) !important;
-        }
+        /* Toast */
+        #toast-container { position:fixed; bottom:2rem; right:2rem; z-index:9999; display:flex; flex-direction:column; gap:0.75rem; }
+        .toast-msg { padding:0.85rem 1.25rem; border-radius:12px; font-size:0.88rem; font-weight:500; color:#fff; backdrop-filter:blur(12px); animation:slideIn 0.3s ease; max-width:320px; box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+        .toast-msg.success { background:rgba(34,197,94,0.85);  border:1px solid rgba(34,197,94,0.4); }
+        .toast-msg.error   { background:rgba(239,68,68,0.85);  border:1px solid rgba(239,68,68,0.4); }
+        .toast-msg.info    { background:rgba(99,102,241,0.85); border:1px solid rgba(99,102,241,0.4); }
+        .toast-msg.warning { background:rgba(234,179,8,0.85);  border:1px solid rgba(234,179,8,0.4); }
 
-        .text-muted {
-            color: var(--text-muted) !important;
-        }
-
-        .list-group-item {
-            background: transparent;
-            border-color: var(--border-color);
-            color: var(--text-main);
-            padding: 1.25rem 1.5rem;
-            transition: background 0.2s;
-        }
-
-        .list-group-item:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        /* Badges */
-        .badge {
-            font-weight: 500;
-            padding: 0.4em 0.8em;
-            border-radius: 6px;
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .badge.bg-light {
-            background-color: rgba(255, 255, 255, 0.1) !important;
-            color: var(--text-main) !important;
-            border-color: transparent !important;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .card {
-            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
-        }
-
-        .col-md-4:nth-child(1) .card {
-            animation-delay: 0.05s;
-        }
-
-        .col-md-4:nth-child(2) .card {
-            animation-delay: 0.15s;
-        }
-
-        .col-md-4:nth-child(3) .card {
-            animation-delay: 0.25s;
-        }
-
-        .col-md-4:nth-child(4) .card {
-            animation-delay: 0.35s;
-        }
-
-        .col-md-5 .card {
-            animation-delay: 0.1s;
-        }
-
-        .col-md-7 .card {
-            animation-delay: 0.2s;
-        }
+        @keyframes fadeUp  { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
     </style>
 </head>
-
 <body>
 
-    <nav class="navbar navbar-dark bg-dark mb-4">
-        <div class="container">
-            <span class="navbar-brand mb-0 h1">AI Dataset Manager</span>
-            <a href="/" class="btn btn-outline-light btn-sm">Back to Dashboard</a>
-        </div>
-    </nav>
+<nav class="navbar navbar-dark mb-4">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span class="navbar-brand mb-0 h1">⚡ AI Dataset Manager</span>
+        <a href="dashboard.html" class="btn-back">← Dashboard</a>
+    </div>
+</nav>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-5">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white">Create New Dataset</div>
-                    <div class="card-body">
-                        <input id="name" class="form-control mb-3" placeholder="Dataset Name">
-                        <input id="description" class="form-control mb-3" placeholder="Description">
-                        <input id="created_by" class="form-control mb-3" type="number" placeholder="User ID (e.g., 1)">
-
-                        <label class="form-label fw-bold text-muted small">Upload Dataset File</label>
-                        <input id="dataset_file" type="file" class="form-control mb-3">
-
-                        <button onclick="createDataset()" class="btn btn-primary w-100">Upload & Create</button>
-                    </div>
+<div class="container mb-5">
+    <div class="row">
+        <!-- Create Dataset -->
+        <div class="col-md-5 mb-4">
+            <div class="card">
+                <div class="card-header">📦 Create New Dataset</div>
+                <div class="card-body">
+                    <label class="form-label">Dataset Name</label>
+                    <input id="name" class="form-control mb-3" placeholder="e.g. Protein Solubility v1">
+                    <label class="form-label">Description</label>
+                    <input id="description" class="form-control mb-3" placeholder="Brief description">
+                    <label class="form-label">User ID</label>
+                    <input id="created_by" class="form-control mb-3" type="number" placeholder="e.g. 1">
+                    <label class="form-label">Dataset File (CSV / JSON)</label>
+                    <input id="dataset_file" type="file" class="form-control mb-4" accept=".csv,.json,.tsv,.txt">
+                    <button id="create-btn" onclick="createDataset()" class="btn-primary-grad">
+                        <span id="create-btn-text">⬆ Upload &amp; Create</span>
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-7">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-secondary text-white">Existing Datasets</div>
-                    <ul id="dataset-list" class="list-group list-group-flush">
-                    </ul>
+        <!-- Dataset List -->
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header">
+                    <span>Existing Datasets</span>
+                    <span id="dataset-count" class="chip">0 datasets</span>
                 </div>
+                <div class="card-body pb-2 pt-2">
+                    <div class="search-wrap">
+                        <span class="search-icon">🔍</span>
+                        <input id="search-input" class="form-control" placeholder="Search datasets..." oninput="debounceSearch()">
+                    </div>
+                </div>
+                <div id="dataset-list"></div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        async function createDataset() {
-            const name = document.getElementById("name").value;
-            const description = document.getElementById("description").value;
-            const created_by = document.getElementById("created_by").value;
-            const fileInput = document.getElementById("dataset_file").files[0];
+<!-- History Modal -->
+<div class="modal fade" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">📖 Change History</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="history-content"><div class="empty-state"><div class="icon">🔄</div><p>Loading history...</p></div></div>
+            </div>
+        </div>
+    </div>
+</div>
 
-            if (!name || !created_by || !fileInput) {
-                alert("Dataset Name, User ID, and a File are required.");
+<!-- CSV Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">👁 Dataset Preview <small id="preview-title" style="color:var(--text-muted);font-weight:400;font-size:0.85rem;margin-left:0.5rem;"></small></span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:0.8rem;color:var(--text-muted);">Showing first 10 rows of the latest version.</p>
+                <div id="preview-content"><div class="empty-state"><div class="icon">⏳</div><p>Loading preview...</p></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Version Upload User ID Modal -->
+<div class="modal fade" id="uploadVersionModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">⬆ Upload New Version</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Your User ID</label>
+                <input id="version-user-id" class="form-control mb-3" type="number" placeholder="e.g. 1">
+                <button id="confirm-version-btn" class="btn-primary-grad">Confirm Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ── Toast ──────────────────────────────────────────────────────────────────
+    function showToast(message, type = 'info') {
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.className = `toast-msg ${type}`;
+        t.textContent = message;
+        c.appendChild(t);
+        setTimeout(() => {
+            t.style.cssText = 'opacity:0;transform:translateX(30px);transition:all 0.3s;';
+            setTimeout(() => t.remove(), 300);
+        }, 3500);
+    }
+
+    // ── Button loading state ───────────────────────────────────────────────────
+    function setLoading(btnId, textId, loading, label) {
+        const btn = document.getElementById(btnId);
+        const txt = document.getElementById(textId);
+        btn.disabled = loading;
+        txt.innerHTML = loading ? '<span class="spinner"></span> Working...' : label;
+    }
+
+    // ── Create Dataset ─────────────────────────────────────────────────────────
+    async function createDataset() {
+        const name        = document.getElementById('name').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const created_by  = document.getElementById('created_by').value.trim();
+        const fileInput   = document.getElementById('dataset_file').files[0];
+
+        if (!name || !created_by || !fileInput) {
+            showToast('Dataset name, User ID, and a file are required.', 'error');
+            return;
+        }
+
+        setLoading('create-btn', 'create-btn-text', true);
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('created_by', created_by);
+        formData.append('file', fileInput);
+
+        try {
+            const res    = await fetch('/datasets/create', { method: 'POST', body: formData });
+            const result = await res.json();
+            if (res.ok) {
+                showToast('✅ ' + result.message, 'success');
+                ['name','description','created_by','dataset_file'].forEach(id => document.getElementById(id).value = '');
+                loadDatasets();
+            } else {
+                showToast('❌ ' + result.error, 'error');
+            }
+        } catch { showToast('Network error — is the server running?', 'error'); }
+        finally { setLoading('create-btn', 'create-btn-text', false, '⬆ Upload &amp; Create'); }
+    }
+
+    // ── Load & Render Datasets ─────────────────────────────────────────────────
+    async function loadDatasets(query = '') {
+        const url  = query ? `/datasets/search?q=${encodeURIComponent(query)}` : '/datasets/';
+        const list = document.getElementById('dataset-list');
+        list.innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Loading datasets...</p></div>';
+        try {
+            const res      = await fetch(url);
+            const datasets = await res.json();
+            document.getElementById('dataset-count').textContent = `${datasets.length} dataset${datasets.length !== 1 ? 's' : ''}`;
+            if (datasets.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No datasets found.</p></div>';
                 return;
             }
+            list.innerHTML = '';
+            datasets.forEach(d => {
+                const div    = document.createElement('div');
+                div.className = 'dataset-item';
+                const file   = d.storage_path || 'No file';
+                const isCSV  = file.toLowerCase().endsWith('.csv') || file.toLowerCase().endsWith('.tsv') || file.toLowerCase().endsWith('.txt');
+                div.innerHTML = `
+                    <div class="dataset-name">${escHtml(d.dataset_name)}</div>
+                    <div class="dataset-desc">${escHtml(d.description || 'No description')}</div>
+                    <div class="dataset-meta">
+                        <span class="chip version">⚡ v${d.version_number || 1}</span>
+                        <span class="chip">📄 ${escHtml(file)}</span>
+                        <span class="chip">🆔 ${d.dataset_id}</span>
+                    </div>
+                    <div class="actions">
+                        <input type="file" id="upf_${d.dataset_id}" style="display:none;" accept=".csv,.json,.tsv,.txt" onchange="triggerVersionUpload(${d.dataset_id})">
+                        <button class="btn-sm-action" onclick="document.getElementById('upf_${d.dataset_id}').click()">⬆ New Version</button>
+                        ${isCSV ? `<button class="btn-sm-action" onclick="previewDataset(${d.dataset_id}, '${escHtml(d.dataset_name)}')">👁 Preview</button>` : ''}
+                        <button class="btn-sm-action" onclick="promptLogChange(${d.version_id})">✏️ Manual Log</button>
+                        <button class="btn-sm-action" onclick="viewHistory(${d.dataset_id})">📖 History</button>
+                        <button class="btn-danger-sm ms-auto" onclick="deleteDataset(${d.dataset_id})">🗑 Delete</button>
+                    </div>`;
+                list.appendChild(div);
+            });
+        } catch { showToast('Failed to load datasets.', 'error'); }
+    }
 
-            const formData = new FormData();
-            formData.append("name", name);
-            formData.append("description", description);
-            formData.append("created_by", created_by);
-            formData.append("file", fileInput);
+    // ── Version Upload ─────────────────────────────────────────────────────────
+    let pendingVersionDatasetId = null;
+    let pendingVersionFile      = null;
 
-            try {
-                const response = await fetch("/datasets/create", { method: "POST", body: formData });
-                const result = await response.json();
+    function triggerVersionUpload(dataset_id) {
+        const file = document.getElementById(`upf_${dataset_id}`).files[0];
+        if (!file) return;
+        pendingVersionDatasetId = dataset_id;
+        pendingVersionFile      = file;
+        document.getElementById('version-user-id').value = '';
+        new bootstrap.Modal(document.getElementById('uploadVersionModal')).show();
+        document.getElementById('confirm-version-btn').onclick = confirmVersionUpload;
+    }
 
-                if (response.ok) {
-                    alert("Success: " + result.message);
-                    document.getElementById("name").value = '';
-                    document.getElementById("description").value = '';
-                    document.getElementById("created_by").value = '';
-                    document.getElementById("dataset_file").value = '';
-                    loadDatasets();
-                } else {
-                    alert("Error: " + result.error);
-                }
-            } catch (error) {
-                alert("Network error.");
+    async function confirmVersionUpload() {
+        const userId = document.getElementById('version-user-id').value.trim();
+        if (!userId) { showToast('User ID is required.', 'error'); return; }
+        const btn = document.getElementById('confirm-version-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Uploading...';
+
+        const formData = new FormData();
+        formData.append('file', pendingVersionFile);
+        formData.append('user_id', userId);
+        try {
+            const res    = await fetch(`/datasets/upload_version/${pendingVersionDatasetId}`, { method: 'POST', body: formData });
+            const result = await res.json();
+            bootstrap.Modal.getInstance(document.getElementById('uploadVersionModal')).hide();
+            if (res.status === 200) {
+                showToast('🛑 ' + result.message, 'warning');
+            } else if (res.ok) {
+                showToast('✅ ' + result.message, 'success');
+                loadDatasets();
+            } else {
+                showToast('❌ ' + result.error, 'error');
             }
-        }
+        } catch { showToast('Network error.', 'error'); }
+        finally { btn.disabled = false; btn.innerHTML = 'Confirm Upload'; }
+    }
 
-        async function loadDatasets() {
-            try {
-                const res = await fetch("/datasets/");
-                const datasets = await res.json();
-                const list = document.getElementById("dataset-list");
-                list.innerHTML = "";
+    // ── Manual Log ────────────────────────────────────────────────────────────
+    async function promptLogChange(version_id) {
+        const userId = prompt('Enter your User ID to log this change:');
+        if (!userId) return;
+        const description = prompt('Describe what changed (e.g., "Removed empty rows"):');
+        if (!description) return;
+        try {
+            const res = await fetch('/datasets/log_change', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ version_id, user_id: userId, description })
+            });
+            const result = await res.json();
+            showToast(res.ok ? '✅ ' + result.message : '❌ ' + result.error, res.ok ? 'success' : 'error');
+        } catch { showToast('Network error.', 'error'); }
+    }
 
-                if (datasets.length === 0) {
-                    list.innerHTML = "<li class='list-group-item text-muted'>No datasets found.</li>";
-                    return;
-                }
-
-                datasets.forEach(d => {
-                    const li = document.createElement("li");
-                    li.className = "list-group-item";
-                    const fileName = d.storage_path ? d.storage_path : "No file attached";
-
-                    li.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <strong>${d.dataset_name}</strong><br>
-                                <small class="text-muted">${d.description}</small><br>
-                                <span class="badge bg-light text-dark border mt-1">📄 ${fileName}</span>
-                            </div>
-                            <span class="badge bg-success rounded-pill mt-1">Version: ${d.version_number || 1}</span>
-                        </div>
-                        <div class="d-flex gap-2 mt-3 flex-wrap">
-                            <input type="file" id="update_file_${d.dataset_id}" style="display: none;" onchange="submitNewVersion(${d.dataset_id})">
-                            <button onclick="document.getElementById('update_file_${d.dataset_id}').click()" class="btn btn-sm btn-outline-success">Upload New Version</button>
-                            
-                            <button onclick="promptLogChange(${d.version_id})" class="btn btn-sm btn-outline-primary">Manual Log</button>
-                            <button onclick="viewHistory(${d.dataset_id})" class="btn btn-sm btn-outline-secondary">View History</button>
-                            <button onclick="deleteDataset(${d.dataset_id})" class="btn btn-sm btn-danger ms-auto">Delete</button>
-                        </div>
-                    `;
-                    list.appendChild(li);
-                });
-            } catch (error) {
-                console.error("Error fetching datasets:", error);
+    // ── View History (Timeline Modal) ─────────────────────────────────────────
+    async function viewHistory(dataset_id) {
+        const modal = new bootstrap.Modal(document.getElementById('historyModal'));
+        document.getElementById('history-content').innerHTML = '<div class="empty-state"><div class="icon">🔄</div><p>Loading...</p></div>';
+        modal.show();
+        try {
+            const res     = await fetch(`/datasets/history/${dataset_id}`);
+            const history = await res.json();
+            const content = document.getElementById('history-content');
+            if (history.length === 0) {
+                content.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No changes logged yet.</p></div>';
+                return;
             }
-        }
+            const html = history.map(h => {
+                const date = new Date(h.change_date).toLocaleString();
+                const user = h.user_name || 'System';
+                return `<div class="tl-item">
+                    <div class="tl-dot"></div>
+                    <div class="tl-version">v${h.version_number}</div>
+                    <div class="tl-desc">${escHtml(h.change_description)}</div>
+                    <div class="tl-meta">👤 ${escHtml(user)} &nbsp;·&nbsp; 🕐 ${date}</div>
+                </div>`;
+            }).join('');
+            content.innerHTML = `<div class="timeline">${html}</div>`;
+        } catch { document.getElementById('history-content').innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>Failed to load history.</p></div>'; }
+    }
 
-        async function submitNewVersion(dataset_id) {
-            const fileInput = document.getElementById(`update_file_${dataset_id}`).files[0];
-            if (!fileInput) return;
+    // ── CSV Preview Modal ─────────────────────────────────────────────────────
+    async function previewDataset(dataset_id, name) {
+        document.getElementById('preview-title').textContent = `— ${name}`;
+        const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+        document.getElementById('preview-content').innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Loading preview...</p></div>';
+        modal.show();
+        try {
+            const res  = await fetch(`/datasets/preview/${dataset_id}`);
+            const data = await res.json();
+            if (!res.ok) { document.getElementById('preview-content').innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${data.error}</p></div>`; return; }
+            if (!data.rows || data.rows.length === 0) { document.getElementById('preview-content').innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No rows found or file is not a valid CSV.</p></div>'; return; }
+            const headers = data.headers;
+            const rows    = data.rows;
+            const thead   = headers.map(h => `<th>${escHtml(h)}</th>`).join('');
+            const tbody   = rows.map(r => `<tr>${headers.map(h => `<td>${escHtml(String(r[h] ?? ''))}</td>`).join('')}</tr>`).join('');
+            document.getElementById('preview-content').innerHTML = `<div class="table-wrap"><table class="preview-table"><thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody></table></div>`;
+        } catch { document.getElementById('preview-content').innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>Failed to load preview.</p></div>'; }
+    }
 
-            const userId = prompt("Enter your User ID to authenticate this upload (e.g., 1):");
-            if (!userId) return;
+    // ── Delete Dataset ────────────────────────────────────────────────────────
+    async function deleteDataset(dataset_id) {
+        if (!confirm('⚠️ Permanently delete this dataset, all versions, files, and experiments?')) return;
+        try {
+            const res    = await fetch(`/datasets/delete/${dataset_id}`, { method: 'DELETE' });
+            const result = await res.json();
+            showToast(res.ok ? '✅ ' + result.message : '❌ ' + result.error, res.ok ? 'success' : 'error');
+            if (res.ok) loadDatasets();
+        } catch { showToast('Network error.', 'error'); }
+    }
 
-            const formData = new FormData();
-            formData.append("file", fileInput);
-            formData.append("user_id", userId);
+    // ── Debounced Search ──────────────────────────────────────────────────────
+    let searchTimer = null;
+    function debounceSearch() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+            loadDatasets(document.getElementById('search-input').value.trim());
+        }, 350);
+    }
 
-            try {
-                const response = await fetch(`/datasets/upload_version/${dataset_id}`, { method: "POST", body: formData });
-                const result = await response.json();
+    // ── Utility ───────────────────────────────────────────────────────────────
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
 
-                if (response.status === 200) {
-                    alert("🛑 " + result.message);
-                } else if (response.ok) {
-                    alert("✅ " + result.message);
-                    loadDatasets();
-                } else {
-                    alert("Error: " + result.error);
-                }
-            } catch (error) {
-                alert("Network error.");
-            }
-        }
-
-        async function promptLogChange(version_id) {
-            const userId = prompt("Enter your User ID to log this change:");
-            if (!userId) return;
-            const description = prompt("What did you change? (e.g., 'Removed empty rows')");
-            if (!description) return;
-
-            try {
-                const response = await fetch("/datasets/log_change", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ version_id: version_id, user_id: userId, description: description })
-                });
-                const result = await response.json();
-                if (response.ok) alert("Success: " + result.message);
-                else alert("Error.");
-            } catch (error) { }
-        }
-
-        async function viewHistory(dataset_id) {
-            try {
-                const response = await fetch(`/datasets/history/${dataset_id}`);
-                const history = await response.json();
-                if (history.length === 0) {
-                    alert("No changes have been logged yet.");
-                    return;
-                }
-                let message = "📖 DATASET CHANGE HISTORY 📖\n\n";
-                history.forEach(h => {
-                    const date = new Date(h.change_date).toLocaleString();
-                    message += `[v${h.version_number}] - ${date}\nUser: ${h.user_name}\nChange: ${h.change_description}\n\n`;
-                });
-                alert(message);
-            } catch (error) { }
-        }
-
-        async function deleteDataset(dataset_id) {
-            const confirmDelete = confirm("⚠️ Are you sure you want to completely delete this dataset? This will permanently erase all physical files, version history, and tied experiments.");
-            if (!confirmDelete) return;
-
-            try {
-                const response = await fetch(`/datasets/delete/${dataset_id}`, { method: "DELETE" });
-                const result = await response.json();
-                if (response.ok) {
-                    alert("✅ " + result.message);
-                    loadDatasets();
-                } else {
-                    alert("Error: " + result.error);
-                }
-            } catch (error) {
-                alert("Network error.");
-            }
-        }
-
-        loadDatasets();
-    </script>
+    loadDatasets();
+</script>
 </body>
-
 </html>

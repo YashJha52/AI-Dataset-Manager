@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | AI Dataset Manager</title>
-    <!-- Google Fonts for Modern Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="AI Dataset Manager — manage datasets, versions, models, and experiment results in one place.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0f172a;
-            --surface-color: #1e293b;
             --primary-color: #6366f1;
             --primary-hover: #818cf8;
             --text-main: #f8fafc;
@@ -19,8 +18,10 @@
             --glass-bg: rgba(30, 41, 59, 0.6);
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            background: radial-gradient(circle at top right, #1e1b4b, #0f172a 40%, #020617);
+            background: radial-gradient(ellipse at 70% 0%, #1e1b4b 0%, #0f172a 40%, #020617 100%);
             background-attachment: fixed;
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
@@ -28,186 +29,399 @@
             min-height: 100vh;
         }
 
-        /* Glassmorphism Navbar */
+        /* ── Navbar ── */
         .navbar {
             background: rgba(15, 23, 42, 0.5) !important;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
-            padding: 1.25rem 0;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 1.1rem 0;
         }
-
         .navbar-brand {
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 1.25rem;
             letter-spacing: -0.5px;
             background: linear-gradient(135deg, #a5b4fc, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-left: 1.5rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--text-main); }
 
-        /* Premium Glass Card */
-        .card {
+        /* ── Hero ── */
+        .hero {
+            padding: 5rem 0 3rem;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #a5b4fc;
+            padding: 0.3rem 0.9rem;
+            border-radius: 100px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+        .hero h1 span {
+            background: linear-gradient(135deg, #a5b4fc, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 520px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+
+        /* ── KPI Cards ── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+        .kpi-card {
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.5rem 1.25rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+        .kpi-icon { font-size: 1.8rem; margin-bottom: 0.6rem; }
+        .kpi-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #f8fafc, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .kpi-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+        .kpi-card:nth-child(1) { animation-delay: 0.05s; }
+        .kpi-card:nth-child(2) { animation-delay: 0.12s; }
+        .kpi-card:nth-child(3) { animation-delay: 0.19s; }
+        .kpi-card:nth-child(4) { animation-delay: 0.26s; }
+        .kpi-card:nth-child(5) { animation-delay: 0.33s; }
+        .kpi-card:nth-child(6) { animation-delay: 0.40s; }
+
+        /* ── Nav Cards ── */
+        .nav-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 3rem;
+        }
+        .nav-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            position: relative;
             overflow: hidden;
+        }
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(99,102,241,0.08), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .nav-card:hover::before { opacity: 1; }
+        .nav-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 24px 48px rgba(0,0,0,0.35), 0 0 0 1px rgba(99,102,241,0.2);
             color: var(--text-main);
         }
+        .nav-card-icon {
+            font-size: 2rem;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: rgba(99, 102, 241, 0.15);
+        }
+        .nav-card h3 { font-size: 1.05rem; font-weight: 700; margin: 0; letter-spacing: -0.3px; }
+        .nav-card p  { font-size: 0.85rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
+        .nav-card .arrow {
+            margin-top: auto;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            transform: translateX(0);
+            transition: transform 0.3s;
+        }
+        .nav-card:hover .arrow { transform: translateX(5px); }
+        .nav-card:nth-child(1) { animation-delay: 0.1s; }
+        .nav-card:nth-child(2) { animation-delay: 0.18s; }
+        .nav-card:nth-child(3) { animation-delay: 0.26s; }
+        .nav-card:nth-child(4) { animation-delay: 0.34s; }
+        .nav-card:nth-child(5) { animation-delay: 0.42s; }
 
-        .card:hover {
-            transform: translateY(-4px) scale(1.01);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            background: rgba(30, 41, 59, 0.75);
+        /* ── Buttons ── */
+        .btn-register {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 0.5rem 1.1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-register:hover {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            border-color: rgba(255,255,255,0.3);
         }
 
-        .card-body {
-            padding: 2rem;
-        }
-
-        .card-title {
-            font-weight: 600;
-            letter-spacing: -0.025em;
+        /* ── Section label ── */
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
             margin-bottom: 1rem;
         }
 
-        /* Buttons Update */
-        .btn {
-            border-radius: 10px;
+        /* ── Toast ── */
+        #toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .toast-msg {
+            padding: 0.85rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.88rem;
             font-weight: 500;
-            padding: 0.6rem 1.2rem;
-            transition: all 0.3s ease;
-            letter-spacing: 0.025em;
-            text-transform: none;
-        }
-
-        .btn-primary,
-        .btn-info,
-        .btn-success,
-        .btn-warning {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #4f46e5 100%);
-            border: none;
-            color: white !important;
-            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-primary:hover,
-        .btn-info:hover,
-        .btn-success:hover,
-        .btn-warning:hover {
-            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px -2px rgba(99, 102, 241, 0.5);
-            color: white !important;
-        }
-
-        .btn-outline-light {
-            border-color: rgba(255, 255, 255, 0.2);
-            color: var(--text-main);
-        }
-
-        .btn-outline-light:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
             color: #fff;
+            backdrop-filter: blur(12px);
+            animation: slideIn 0.3s ease;
+            max-width: 320px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .toast-msg.success { background: rgba(34, 197, 94, 0.85); border: 1px solid rgba(34,197,94,0.4); }
+        .toast-msg.error   { background: rgba(239, 68, 68, 0.85);  border: 1px solid rgba(239,68,68,0.4); }
+        .toast-msg.info    { background: rgba(99, 102, 241, 0.85); border: 1px solid rgba(99,102,241,0.4); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to   { opacity: 1; transform: translateX(0); }
         }
 
-        .text-muted {
-            color: var(--text-muted) !important;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .card {
-            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
-        }
-
-        .col-md-4:nth-child(1) .card {
-            animation-delay: 0.05s;
-        }
-
-        .col-md-4:nth-child(2) .card {
-            animation-delay: 0.15s;
-        }
-
-        .col-md-4:nth-child(3) .card {
-            animation-delay: 0.25s;
-        }
-
-        .col-md-4:nth-child(4) .card {
-            animation-delay: 0.35s;
+        .avg-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+            padding: 0.35rem 1rem;
+            border-radius: 100px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-top: 1rem;
         }
     </style>
 </head>
-
 <body>
-    <nav class="navbar navbar-dark mb-5">
-        <div class="container">
-            <span class="navbar-brand mb-0 h1">AI Dataset Manager</span>
-            <a href="login.html" class="btn btn-outline-light btn-sm">Register User</a>
-        </div>
-    </nav>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-primary">Manage Datasets</h5>
-                        <p class="card-text text-muted">Create new datasets and view existing ones.</p>
-                        <a href="datasets.html" class="btn btn-primary w-100 mt-3">Go to Datasets</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-warning">Manage Models</h5>
-                        <p class="card-text text-muted">Add and view AI algorithms for testing.</p>
-                        <a href="models.html" class="btn btn-warning w-100 mt-3">Go to Models</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-info">Manage Versions</h5>
-                        <p class="card-text text-muted">Track dataset iterations and file paths.</p>
-                        <a href="versions.html" class="btn btn-info w-100 mt-3">Go to Versions</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-success">Run Experiments</h5>
-                        <p class="card-text text-muted">Log model accuracy, loss, and tracking.</p>
-                        <a href="experiments.html" class="btn btn-success w-100 mt-3">Go to Experiments</a>
-                    </div>
-                </div>
-            </div>
+<nav class="navbar navbar-dark mb-0">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span class="navbar-brand mb-0 h1">⚡ AI Dataset Manager</span>
+        <div class="nav-links d-flex align-items-center">
+            <a href="datasets.html">Datasets</a>
+            <a href="models.html">Models</a>
+            <a href="experiments.html">Experiments</a>
+            <a href="versions.html">Versions</a>
+            <a href="login.html" class="btn-register ms-3">Register User</a>
         </div>
     </div>
-</body>
+</nav>
 
+<div class="container">
+    <div class="hero">
+        <div class="hero-badge">✦ DBMS Project</div>
+        <h1>Manage Your <span>AI Datasets</span><br>Like a Pro</h1>
+        <p>Version-controlled datasets, experiment tracking, and model management — all in one place.</p>
+        <div id="avg-accuracy-badge" style="display:none;">
+            <span class="avg-badge">📊 Avg Experiment Accuracy: <strong id="avg-acc-val">—</strong></span>
+        </div>
+    </div>
+
+    <!-- KPI Stats -->
+    <div class="section-label">Live Statistics</div>
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon">📦</div>
+            <div class="kpi-number" id="stat-datasets">—</div>
+            <div class="kpi-label">Datasets</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon">🔁</div>
+            <div class="kpi-number" id="stat-versions">—</div>
+            <div class="kpi-label">Versions</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon">🧪</div>
+            <div class="kpi-number" id="stat-experiments">—</div>
+            <div class="kpi-label">Experiments</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon">🤖</div>
+            <div class="kpi-number" id="stat-models">—</div>
+            <div class="kpi-label">Models</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon">👤</div>
+            <div class="kpi-number" id="stat-users">—</div>
+            <div class="kpi-label">Users</div>
+        </div>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="section-label">Navigate</div>
+    <div class="nav-cards">
+        <a href="datasets.html" class="nav-card">
+            <div class="nav-card-icon">📦</div>
+            <h3>Datasets</h3>
+            <p>Upload, version, and manage your training datasets with SHA-256 change detection.</p>
+            <div class="arrow">→</div>
+        </a>
+        <a href="models.html" class="nav-card">
+            <div class="nav-card-icon">🤖</div>
+            <h3>Models</h3>
+            <p>Register AI models and algorithms for experiment tracking.</p>
+            <div class="arrow">→</div>
+        </a>
+        <a href="versions.html" class="nav-card">
+            <div class="nav-card-icon">🔁</div>
+            <h3>Versions</h3>
+            <p>Browse all dataset iterations and their file storage paths.</p>
+            <div class="arrow">→</div>
+        </a>
+        <a href="experiments.html" class="nav-card">
+            <div class="nav-card-icon">🧪</div>
+            <h3>Experiments</h3>
+            <p>Log accuracy and loss metrics and compare model performance with charts.</p>
+            <div class="arrow">→</div>
+        </a>
+        <a href="login.html" class="nav-card">
+            <div class="nav-card-icon">👤</div>
+            <h3>Register User</h3>
+            <p>Add a new user to associate with dataset changes and uploads.</p>
+            <div class="arrow">→</div>
+        </a>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast-msg ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(30px)'; toast.style.transition = 'all 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    function animateCount(el, target, isFloat = false) {
+        if (target === null || target === undefined) { el.textContent = '—'; return; }
+        let current = 0;
+        const duration = 800;
+        const steps = 40;
+        const step = target / steps;
+        const interval = duration / steps;
+        const timer = setInterval(() => {
+            current = Math.min(current + step, target);
+            el.textContent = isFloat ? current.toFixed(3) : Math.floor(current);
+            if (current >= target) { el.textContent = isFloat ? target.toFixed(3) : target; clearInterval(timer); }
+        }, interval);
+    }
+
+    async function loadStats() {
+        try {
+            const res = await fetch('/stats');
+            if (!res.ok) throw new Error('Stats fetch failed');
+            const s = await res.json();
+            animateCount(document.getElementById('stat-datasets'),    s.total_datasets);
+            animateCount(document.getElementById('stat-versions'),     s.total_versions);
+            animateCount(document.getElementById('stat-experiments'),  s.total_experiments);
+            animateCount(document.getElementById('stat-models'),       s.total_models);
+            animateCount(document.getElementById('stat-users'),        s.total_users);
+            if (s.avg_accuracy !== null) {
+                document.getElementById('avg-accuracy-badge').style.display = 'block';
+                document.getElementById('avg-acc-val').textContent = (s.avg_accuracy * 100).toFixed(1) + '%';
+            }
+        } catch (e) {
+            showToast('Could not load stats — is the server running?', 'error');
+        }
+    }
+
+    loadStats();
+</script>
+</body>
 </html>

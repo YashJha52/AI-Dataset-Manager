@@ -2,313 +2,193 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dataset Versions | AI Dataset Manager</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Versions | AI Dataset Manager</title>
+    <meta name="description" content="Browse all dataset versions and their file storage paths.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --surface-color: #1e293b;
-            --primary-color: #6366f1;
-            --primary-hover: #818cf8;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --glass-bg: rgba(30, 41, 59, 0.6);
+            --bg-color: #0f172a; --primary-color: #6366f1; --primary-hover: #818cf8;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --border-color: rgba(255,255,255,0.1); --glass-bg: rgba(30,41,59,0.6);
         }
+        * { box-sizing: border-box; }
+        body { background: radial-gradient(ellipse at 70% 0%, #1e1b4b 0%, #0f172a 40%, #020617 100%); background-attachment: fixed; color: var(--text-main); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+        .navbar { background: rgba(15,23,42,0.5) !important; backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); padding: 1.1rem 0; }
+        .navbar-brand { font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #a5b4fc, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-back { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); color: var(--text-main); border-radius: 10px; padding: 0.45rem 1rem; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; text-decoration: none; }
+        .btn-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
-        body {
-            background: radial-gradient(circle at top right, #1e1b4b, #0f172a 40%, #020617);
-            background-attachment: fixed;
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-        }
+        .card { background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border-color); border-radius: 16px; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); overflow: hidden; color: var(--text-main); animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
+        .col-md-5 .card { animation-delay: 0.05s; }
+        .col-md-7 .card { animation-delay: 0.15s; }
+        .card-header { background: rgba(255,255,255,0.03) !important; border-bottom: 1px solid var(--border-color); font-weight: 600; color: var(--text-main) !important; padding: 1.1rem 1.5rem; letter-spacing: 0.5px; text-transform: uppercase; font-size: 0.82rem; display: flex; align-items: center; justify-content: space-between; }
+        .card-body { padding: 1.75rem; }
 
-        /* Glassmorphism Navbar */
-        .navbar {
-            background: rgba(15, 23, 42, 0.5) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1.25rem 0;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #a5b4fc, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .form-control { background-color: rgba(15,23,42,0.5); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; padding: 0.7rem 1rem; transition: all 0.2s; }
+        .form-control:focus { background-color: rgba(15,23,42,0.8); border-color: var(--primary-color); color: var(--text-main); box-shadow: 0 0 0 3px rgba(99,102,241,0.25); outline: none; }
+        .form-control::placeholder { color: rgba(148,163,184,0.6); }
+        .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
-        /* Premium Glass Card */
-        .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            color: var(--text-main);
-        }
+        .btn-save { background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); border: none; color: white; border-radius: 10px; font-weight: 600; padding: 0.7rem 1.2rem; transition: all 0.3s; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        .btn-save:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px -2px rgba(56,189,248,0.5); }
+        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .card:hover {
-            transform: translateY(-4px) scale(1.01);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            background: rgba(30, 41, 59, 0.75);
-        }
+        /* Visual Timeline */
+        .timeline-wrap { padding: 1.5rem; }
+        .timeline { position: relative; padding-left: 2rem; }
+        .timeline::before { content: ''; position: absolute; left: 0.4rem; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, rgba(56,189,248,0.5), rgba(99,102,241,0.1)); border-radius: 2px; }
 
-        .card-header {
-            background: rgba(255, 255, 255, 0.03) !important;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 600;
-            color: var(--text-main) !important;
-            padding: 1.25rem 1.5rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-        }
-        
-        .card-body {
-            padding: 2rem;
-        }
+        .tl-item { position: relative; margin-bottom: 1.5rem; transition: all 0.2s; }
+        .tl-item:last-child { margin-bottom: 0; }
+        .tl-dot { position: absolute; left: -1.6rem; top: 0.35rem; width: 12px; height: 12px; border-radius: 50%; background: #38bdf8; border: 2px solid #0f172a; box-shadow: 0 0 0 3px rgba(56,189,248,0.25); transition: transform 0.2s; }
+        .tl-item:hover .tl-dot { transform: scale(1.3); }
 
-        .card-title {
-            font-weight: 600;
-            letter-spacing: -0.025em;
-            margin-bottom: 1rem;
-        }
+        .tl-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0.9rem 1.1rem; transition: all 0.2s; }
+        .tl-card:hover { background: rgba(255,255,255,0.07); border-color: rgba(56,189,248,0.25); }
 
-        /* Forms & Inputs */
-        .form-control {
-            background-color: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
-            transition: all 0.2s;
-        }
+        .tl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem; }
+        .tl-version-badge { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: #7dd3fc; padding: 0.2rem 0.65rem; border-radius: 100px; font-size: 0.73rem; font-weight: 700; }
+        .tl-dataset-id { font-size: 0.72rem; color: var(--text-muted); }
+        .tl-path { font-size: 0.8rem; color: var(--text-muted); font-family: monospace; background: rgba(0,0,0,0.2); padding: 0.3rem 0.6rem; border-radius: 6px; margin-top: 0.4rem; word-break: break-all; }
+        .tl-id { font-size: 0.7rem; color: rgba(148,163,184,0.5); margin-top: 0.4rem; }
 
-        .form-control:focus {
-            background-color: rgba(15, 23, 42, 0.8);
-            border-color: var(--primary-color);
-            color: var(--text-main);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
-            outline: none;
-        }
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+        .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
 
-        .form-control::placeholder {
-            color: rgba(148, 163, 184, 0.6);
-        }
+        #toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.75rem; }
+        .toast-msg { padding: 0.85rem 1.25rem; border-radius: 12px; font-size: 0.88rem; font-weight: 500; color: #fff; backdrop-filter: blur(12px); animation: slideIn 0.3s ease; max-width: 320px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+        .toast-msg.success { background: rgba(34,197,94,0.85);  border: 1px solid rgba(34,197,94,0.4); }
+        .toast-msg.error   { background: rgba(239,68,68,0.85);  border: 1px solid rgba(239,68,68,0.4); }
+        .toast-msg.info    { background: rgba(56,189,248,0.85); border: 1px solid rgba(56,189,248,0.4); }
 
-        /* Buttons Update */
-        .btn {
-            border-radius: 10px;
-            font-weight: 500;
-            padding: 0.6rem 1.2rem;
-            transition: all 0.3s ease;
-            letter-spacing: 0.025em;
-            text-transform: none;
-        }
-
-        .btn-primary, .btn-info, .btn-success, .btn-warning {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #4f46e5 100%);
-            border: none;
-            color: white !important;
-            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-primary:hover, .btn-info:hover, .btn-success:hover, .btn-warning:hover {
-            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px -2px rgba(99, 102, 241, 0.5);
-            color: white !important;
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-            border: none;
-        }
-        .btn-danger:hover {
-             transform: translateY(-2px);
-             box-shadow: 0 6px 15px -2px rgba(239, 68, 68, 0.5);
-        }
-
-        .btn-outline-light {
-            border-color: rgba(255,255,255,0.2);
-            color: var(--text-main);
-        }
-        
-        .btn-outline-light:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.3);
-            color: #fff;
-        }
-
-        .btn-outline-primary, .btn-outline-success, .btn-outline-secondary {
-            border-color: rgba(255,255,255,0.2);
-            color: var(--text-main);
-        }
-        .btn-outline-primary:hover, .btn-outline-success:hover, .btn-outline-secondary:hover {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-        }
-
-        /* Generic Background color overrides */
-        .bg-primary, .bg-secondary, .bg-success, .bg-warning, .bg-info, .bg-dark {
-            background: rgba(255, 255, 255, 0.03) !important;
-        }
-        
-        .fw-bold { font-weight: 600 !important; }
-        .text-dark { color: var(--text-main) !important; }
-        .text-muted { color: var(--text-muted) !important; }
-
-        .list-group-item {
-            background: transparent;
-            border-color: var(--border-color);
-            color: var(--text-main);
-            padding: 1.25rem 1.5rem;
-            transition: background 0.2s;
-        }
-        
-        .list-group-item:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-        
-        /* Badges */
-        .badge {
-            font-weight: 500;
-            padding: 0.4em 0.8em;
-            border-radius: 6px;
-            border-color: rgba(255,255,255,0.1);
-        }
-        .badge.bg-light {
-            background-color: rgba(255,255,255,0.1) !important;
-            color: var(--text-main) !important;
-            border-color: transparent !important;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-        .col-md-4:nth-child(1) .card { animation-delay: 0.05s; }
-        .col-md-4:nth-child(2) .card { animation-delay: 0.15s; }
-        .col-md-4:nth-child(3) .card { animation-delay: 0.25s; }
-        .col-md-4:nth-child(4) .card { animation-delay: 0.35s; }
-        .col-md-5 .card { animation-delay: 0.1s; }
-        .col-md-7 .card { animation-delay: 0.2s; }
-
+        @keyframes fadeUp  { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes spin    { to{transform:rotate(360deg)} }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-dark bg-dark mb-4">
-        <div class="container">
-            <span class="navbar-brand mb-0 h1">AI Dataset Manager</span>
-            <a href="/" class="btn btn-outline-light btn-sm">Back to Dashboard</a>
-        </div>
-    </nav>
+<nav class="navbar navbar-dark mb-4">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span class="navbar-brand mb-0 h1">⚡ AI Dataset Manager</span>
+        <a href="dashboard.html" class="btn-back">← Dashboard</a>
+    </div>
+</nav>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-5">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-info text-white fw-bold">Log New Dataset Version</div>
-                    <div class="card-body">
-                        <input id="dataset_id" type="number" class="form-control mb-3" placeholder="Parent Dataset ID (e.g., 1)">
-                        <input id="version_number" type="number" class="form-control mb-3" placeholder="Version Number (e.g., 1, 2)">
-                        <input id="storage_path" class="form-control mb-3" placeholder="Storage Path (e.g., /data/v1/images/)">
-                        <button onclick="createVersion()" class="btn btn-info text-white w-100 fw-bold">Save Version</button>
-                    </div>
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-md-5 mb-4">
+            <div class="card">
+                <div class="card-header">🔁 Log New Version</div>
+                <div class="card-body">
+                    <label class="form-label">Parent Dataset ID</label>
+                    <input id="dataset_id" type="number" class="form-control mb-3" placeholder="e.g. 1">
+                    <label class="form-label">Version Number</label>
+                    <input id="version_number" type="number" class="form-control mb-3" placeholder="e.g. 2">
+                    <label class="form-label">Storage Path</label>
+                    <input id="storage_path" class="form-control mb-4" placeholder="e.g. /data/v2/dataset.csv">
+                    <button id="save-btn" onclick="createVersion()" class="btn-save">
+                        <span id="save-text">💾 Save Version</span>
+                    </button>
+                    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.75rem;text-align:center;">💡 Tip: Versions are auto-created when you upload via the Datasets page.</p>
                 </div>
             </div>
-            
-            <div class="col-md-7">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-secondary text-white">Existing Versions</div>
-                    <ul id="version-list" class="list-group list-group-flush">
-                        </ul>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header">
+                    <span>Version Timeline</span>
+                    <span id="version-count" style="font-size:0.75rem;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);color:#7dd3fc;padding:0.2rem 0.65rem;border-radius:100px;text-transform:none;letter-spacing:0;">0 versions</span>
                 </div>
+                <div id="version-list"></div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        async function createVersion() {
-            const dataset_id = document.getElementById("dataset_id").value;
-            const version_number = document.getElementById("version_number").value;
-            const storage_path = document.getElementById("storage_path").value;
+<div id="toast-container"></div>
+<script>
+    function showToast(message, type = 'info') {
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.className = `toast-msg ${type}`;
+        t.textContent = message;
+        c.appendChild(t);
+        setTimeout(() => { t.style.cssText = 'opacity:0;transform:translateX(30px);transition:all 0.3s;'; setTimeout(() => t.remove(), 300); }, 3500);
+    }
 
-            if (!dataset_id || !version_number) {
-                alert("Please fill in the Dataset ID and Version Number.");
+    async function createVersion() {
+        const dataset_id     = document.getElementById('dataset_id').value.trim();
+        const version_number = document.getElementById('version_number').value.trim();
+        const storage_path   = document.getElementById('storage_path').value.trim();
+        if (!dataset_id || !version_number) { showToast('Dataset ID and Version Number are required.', 'error'); return; }
+
+        const btn = document.getElementById('save-btn');
+        const txt = document.getElementById('save-text');
+        btn.disabled = true;
+        txt.innerHTML = '<span class="spinner"></span> Saving...';
+
+        try {
+            const res    = await fetch('/versions/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dataset_id: +dataset_id, version_number: +version_number, storage_path }) });
+            const result = await res.json();
+            if (res.ok) {
+                showToast('✅ Version saved!', 'success');
+                document.getElementById('dataset_id').value     = '';
+                document.getElementById('version_number').value = '';
+                document.getElementById('storage_path').value   = '';
+                loadVersions();
+            } else {
+                showToast('❌ ' + (result.error || 'Failed to save version.'), 'error');
+            }
+        } catch { showToast('Network error — is the server running?', 'error'); }
+        finally { btn.disabled = false; txt.innerHTML = '💾 Save Version'; }
+    }
+
+    async function loadVersions() {
+        const list = document.getElementById('version-list');
+        list.innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Loading versions...</p></div>';
+        try {
+            const res      = await fetch('/versions/');
+            const versions = await res.json();
+            document.getElementById('version-count').textContent = `${versions.length} version${versions.length !== 1 ? 's' : ''}`;
+            if (versions.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No versions found. Upload a dataset to create the first version.</p></div>';
                 return;
             }
 
-            try {
-                const response = await fetch("/versions/create", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ dataset_id, version_number, storage_path })
-                });
+            // Group by dataset_id for visual grouping
+            const grouped = {};
+            versions.forEach(v => {
+                if (!grouped[v.dataset_id]) grouped[v.dataset_id] = [];
+                grouped[v.dataset_id].push(v);
+            });
 
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert("Success: Dataset Version saved to SQL!");
-                    document.getElementById("dataset_id").value = '';
-                    document.getElementById("version_number").value = '';
-                    document.getElementById("storage_path").value = '';
-                    loadVersions(); 
-                } else {
-                    alert("Error: " + result.error);
-                }
-            } catch (error) {
-                alert("Network error: Make sure your Flask server is running.");
-            }
-        }
-
-        async function loadVersions() {
-            try {
-                const res = await fetch("/versions/");
-                const versions = await res.json();
-                
-                const list = document.getElementById("version-list");
-                list.innerHTML = ""; 
-                
-                if (versions.length === 0) {
-                    list.innerHTML = "<li class='list-group-item text-muted'>No versions found.</li>";
-                    return;
-                }
-
-                versions.forEach(v => {
-                    const li = document.createElement("li");
-                    li.className = "list-group-item d-flex justify-content-between align-items-center";
-                    li.innerHTML = `
-                        <div>
-                            <strong>Version ${v.version_number}</strong> 
-                            <span class="text-muted small">(Dataset ID: ${v.dataset_id})</span><br>
-                            <small class="text-muted">Path: ${v.storage_path}</small>
+            const html = Object.entries(grouped).map(([datasetId, vers]) => {
+                const items = vers.sort((a,b) => b.version_number - a.version_number).map(v => `
+                    <div class="tl-item">
+                        <div class="tl-dot"></div>
+                        <div class="tl-card">
+                            <div class="tl-header">
+                                <span class="tl-version-badge">🔁 v${v.version_number}</span>
+                                <span class="tl-dataset-id">Dataset #${v.dataset_id}</span>
+                            </div>
+                            <div class="tl-path">📁 ${escHtml(v.storage_path || 'No path specified')}</div>
+                            <div class="tl-id">Version ID: ${v.version_id}</div>
                         </div>
-                        <span class="badge bg-info rounded-pill">Version ID: ${v.version_id}</span>
-                    `;
-                    list.appendChild(li);
-                });
-            } catch (error) {
-                console.error("Error fetching versions:", error);
-            }
-        }
+                    </div>`).join('');
+                return `<div style="margin-bottom:0.5rem;padding:0.75rem 1.5rem 0;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);">Dataset ${datasetId}</div><div class="timeline-wrap"><div class="timeline">${items}</div></div>`;
+            }).join('<hr style="border-color:var(--border-color);margin:0;">');
 
-        loadVersions();
-    </script>
+            list.innerHTML = html;
+        } catch { list.innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>Failed to load versions.</p></div>'; }
+    }
+
+    function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    loadVersions();
+</script>
 </body>
 </html>

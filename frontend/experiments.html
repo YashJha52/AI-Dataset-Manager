@@ -1,278 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Experiments | AI Dataset Manager</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Log and compare AI experiment results with accuracy and loss charts.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --surface-color: #1e293b;
-            --primary-color: #6366f1;
-            --primary-hover: #818cf8;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --glass-bg: rgba(30, 41, 59, 0.6);
+            --bg-color: #0f172a; --primary-color: #6366f1; --primary-hover: #818cf8;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --border-color: rgba(255,255,255,0.1); --glass-bg: rgba(30,41,59,0.6);
         }
-
+        * { box-sizing: border-box; }
         body {
-            background: radial-gradient(circle at top right, #1e1b4b, #0f172a 40%, #020617);
-            background-attachment: fixed;
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
+            background: radial-gradient(ellipse at 70% 0%, #1e1b4b 0%, #0f172a 40%, #020617 100%);
+            background-attachment: fixed; color: var(--text-main);
+            font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh;
         }
-
-        /* Glassmorphism Navbar */
         .navbar {
-            background: rgba(15, 23, 42, 0.5) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1.25rem 0;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            background: rgba(15,23,42,0.5) !important; backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color); padding: 1.1rem 0;
         }
-        
         .navbar-brand {
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            font-weight: 800; letter-spacing: -0.5px;
             background: linear-gradient(135deg, #a5b4fc, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
+        .btn-back { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); color:var(--text-main); border-radius:10px; padding:0.45rem 1rem; font-size:0.85rem; font-weight:500; transition:all 0.2s; text-decoration:none; }
+        .btn-back:hover { background:rgba(255,255,255,0.12); color:#fff; }
 
-        /* Premium Glass Card */
         .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            color: var(--text-main);
+            background: var(--glass-bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+            border:1px solid var(--border-color); border-radius:16px;
+            transition:all 0.3s cubic-bezier(0.4,0,0.2,1); overflow:hidden; color:var(--text-main);
+            animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards; opacity:0;
         }
-
-        .card:hover {
-            transform: translateY(-4px) scale(1.01);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            background: rgba(30, 41, 59, 0.75);
-        }
-
         .card-header {
-            background: rgba(255, 255, 255, 0.03) !important;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 600;
-            color: var(--text-main) !important;
-            padding: 1.25rem 1.5rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            font-size: 0.85rem;
+            background:rgba(255,255,255,0.03) !important; border-bottom:1px solid var(--border-color);
+            font-weight:600; color:var(--text-main) !important; padding:1.1rem 1.5rem;
+            letter-spacing:0.5px; text-transform:uppercase; font-size:0.82rem;
         }
-        
-        .card-body {
-            padding: 2rem;
-        }
-
-        .card-title {
-            font-weight: 600;
-            letter-spacing: -0.025em;
-            margin-bottom: 1rem;
-        }
-
-        /* Forms & Inputs */
+        .card-body { padding: 1.75rem; }
         .form-control {
-            background-color: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
-            transition: all 0.2s;
+            background-color:rgba(15,23,42,0.5); border:1px solid var(--border-color);
+            color:var(--text-main); border-radius:10px; padding:0.7rem 1rem; transition:all 0.2s;
         }
+        .form-control:focus { background-color:rgba(15,23,42,0.8); border-color:var(--primary-color); color:var(--text-main); box-shadow:0 0 0 3px rgba(99,102,241,0.25); outline:none; }
+        .form-control::placeholder { color:rgba(148,163,184,0.6); }
+        .form-label { font-size:0.8rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; }
 
-        .form-control:focus {
-            background-color: rgba(15, 23, 42, 0.8);
-            border-color: var(--primary-color);
-            color: var(--text-main);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
-            outline: none;
+        .btn-submit {
+            background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border:none; color:white;
+            border-radius:10px; font-weight:600; padding:0.7rem 1.2rem; transition:all 0.3s;
+            width:100%; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem;
         }
+        .btn-submit:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 15px -2px rgba(34,197,94,0.5); }
+        .btn-submit:disabled { opacity:0.6; cursor:not-allowed; }
 
-        .form-control::placeholder {
-            color: rgba(148, 163, 184, 0.6);
-        }
+        /* Chart containers */
+        .chart-card { animation-delay: 0.2s; }
+        .chart-card-2 { animation-delay: 0.3s; }
+        canvas { max-height: 260px; }
 
-        /* Buttons Update */
-        .btn {
-            border-radius: 10px;
-            font-weight: 500;
-            padding: 0.6rem 1.2rem;
-            transition: all 0.3s ease;
-            letter-spacing: 0.025em;
-            text-transform: none;
-        }
+        /* Experiment table */
+        .exp-table { width:100%; border-collapse:collapse; font-size:0.83rem; }
+        .exp-table th { background:rgba(99,102,241,0.12); color:#a5b4fc; font-weight:600; padding:0.6rem 0.9rem; border-bottom:1px solid var(--border-color); text-align:left; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap; }
+        .exp-table td { padding:0.65rem 0.9rem; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text-muted); vertical-align:middle; }
+        .exp-table tr:hover td { background:rgba(255,255,255,0.025); color:var(--text-main); }
+        .exp-table tr:last-child td { border-bottom:none; }
+        .acc-good { color:#86efac; font-weight:700; }
+        .acc-mid  { color:#fde68a; font-weight:700; }
+        .acc-bad  { color:#fca5a5; font-weight:700; }
+        .table-wrap { overflow-x:auto; }
 
-        .btn-primary, .btn-info, .btn-success, .btn-warning {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #4f46e5 100%);
-            border: none;
-            color: white !important;
-            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
-        }
+        .empty-state { text-align:center; padding:2.5rem 1rem; color:var(--text-muted); }
+        .empty-state .icon { font-size:2rem; margin-bottom:0.5rem; }
+        .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; display:inline-block; }
 
-        .btn-primary:hover, .btn-info:hover, .btn-success:hover, .btn-warning:hover {
-            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px -2px rgba(99, 102, 241, 0.5);
-            color: white !important;
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-            border: none;
-        }
-        .btn-danger:hover {
-             transform: translateY(-2px);
-             box-shadow: 0 6px 15px -2px rgba(239, 68, 68, 0.5);
-        }
+        /* Staggered card delays */
+        .col-md-5 .card { animation-delay: 0.05s; }
+        .col-md-7 .card { animation-delay: 0.15s; }
 
-        .btn-outline-light {
-            border-color: rgba(255,255,255,0.2);
-            color: var(--text-main);
-        }
-        
-        .btn-outline-light:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.3);
-            color: #fff;
-        }
+        #toast-container { position:fixed; bottom:2rem; right:2rem; z-index:9999; display:flex; flex-direction:column; gap:0.75rem; }
+        .toast-msg { padding:0.85rem 1.25rem; border-radius:12px; font-size:0.88rem; font-weight:500; color:#fff; backdrop-filter:blur(12px); animation:slideIn 0.3s ease; max-width:320px; box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+        .toast-msg.success { background:rgba(34,197,94,0.85); border:1px solid rgba(34,197,94,0.4); }
+        .toast-msg.error   { background:rgba(239,68,68,0.85);  border:1px solid rgba(239,68,68,0.4); }
+        .toast-msg.info    { background:rgba(99,102,241,0.85); border:1px solid rgba(99,102,241,0.4); }
 
-        .btn-outline-primary, .btn-outline-success, .btn-outline-secondary {
-            border-color: rgba(255,255,255,0.2);
-            color: var(--text-main);
-        }
-        .btn-outline-primary:hover, .btn-outline-success:hover, .btn-outline-secondary:hover {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-        }
-
-        /* Generic Background color overrides */
-        .bg-primary, .bg-secondary, .bg-success, .bg-warning, .bg-info, .bg-dark {
-            background: rgba(255, 255, 255, 0.03) !important;
-        }
-        
-        .fw-bold { font-weight: 600 !important; }
-        .text-dark { color: var(--text-main) !important; }
-        .text-muted { color: var(--text-muted) !important; }
-
-        .list-group-item {
-            background: transparent;
-            border-color: var(--border-color);
-            color: var(--text-main);
-            padding: 1.25rem 1.5rem;
-            transition: background 0.2s;
-        }
-        
-        .list-group-item:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-        
-        /* Badges */
-        .badge {
-            font-weight: 500;
-            padding: 0.4em 0.8em;
-            border-radius: 6px;
-            border-color: rgba(255,255,255,0.1);
-        }
-        .badge.bg-light {
-            background-color: rgba(255,255,255,0.1) !important;
-            color: var(--text-main) !important;
-            border-color: transparent !important;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-        .col-md-4:nth-child(1) .card { animation-delay: 0.05s; }
-        .col-md-4:nth-child(2) .card { animation-delay: 0.15s; }
-        .col-md-4:nth-child(3) .card { animation-delay: 0.25s; }
-        .col-md-4:nth-child(4) .card { animation-delay: 0.35s; }
-        .col-md-5 .card { animation-delay: 0.1s; }
-        .col-md-7 .card { animation-delay: 0.2s; }
-
+        @keyframes fadeUp  { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes spin    { to{transform:rotate(360deg)} }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-dark bg-dark mb-4">
-        <div class="container">
-            <span class="navbar-brand mb-0 h1">AI Dataset Manager</span>
-            <a href="/" class="btn btn-outline-light btn-sm">Back to Dashboard</a>
-        </div>
-    </nav>
+<nav class="navbar navbar-dark mb-4">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span class="navbar-brand mb-0 h1">⚡ AI Dataset Manager</span>
+        <a href="dashboard.html" class="btn-back">← Dashboard</a>
+    </div>
+</nav>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-5">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-success text-white">Log Experiment</div>
-                    <div class="card-body">
-                        <input id="model_id" class="form-control mb-3" type="number" placeholder="Model ID (e.g., 1)">
-                        <input id="version_id" class="form-control mb-3" type="number" placeholder="Version ID (e.g., 1)">
-                        <input id="accuracy" class="form-control mb-3" type="number" step="0.01" placeholder="Accuracy (e.g., 0.95)">
-                        <input id="loss" class="form-control mb-3" type="number" step="0.01" placeholder="Loss (e.g., 0.05)">
-                        <button onclick="runExperiment()" class="btn btn-success w-100">Submit Results</button>
-                    </div>
+<div class="container mb-5">
+    <div class="row mb-4">
+        <!-- Log Experiment Form -->
+        <div class="col-md-5 mb-4">
+            <div class="card">
+                <div class="card-header">🧪 Log Experiment</div>
+                <div class="card-body">
+                    <label class="form-label">Model ID</label>
+                    <input id="model_id" class="form-control mb-3" type="number" placeholder="e.g. 1">
+                    <label class="form-label">Version ID</label>
+                    <input id="version_id" class="form-control mb-3" type="number" placeholder="e.g. 1">
+                    <label class="form-label">Accuracy (0.0 – 1.0)</label>
+                    <input id="accuracy" class="form-control mb-3" type="number" step="0.001" min="0" max="1" placeholder="e.g. 0.947">
+                    <label class="form-label">Loss</label>
+                    <input id="loss" class="form-control mb-4" type="number" step="0.001" min="0" placeholder="e.g. 0.053">
+                    <button id="submit-btn" onclick="runExperiment()" class="btn-submit">
+                        <span id="submit-text">📬 Submit Results</span>
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-7">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-secondary text-white">Experiment History</div>
-                    <ul id="experiment-list" class="list-group list-group-flush"></ul>
+        <!-- Experiment History Table -->
+        <div class="col-md-7 mb-4">
+            <div class="card" style="animation-delay:0.15s;">
+                <div class="card-header">📋 Experiment History</div>
+                <div class="card-body p-0">
+                    <div class="table-wrap">
+                        <table class="exp-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Model</th>
+                                    <th>Dataset</th>
+                                    <th>Ver</th>
+                                    <th>Accuracy</th>
+                                    <th>Loss</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="exp-tbody">
+                                <tr><td colspan="7"><div class="empty-state"><div class="icon">⏳</div><p>Loading...</p></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-    async function runExperiment() {
-        const model_id = document.getElementById("model_id").value;
-        const version_id = document.getElementById("version_id").value;
-        const accuracy = document.getElementById("accuracy").value;
-        const loss = document.getElementById("loss").value;
+    <!-- Charts Row -->
+    <div class="row">
+        <!-- Accuracy Over Time -->
+        <div class="col-md-6 mb-4">
+            <div class="card chart-card">
+                <div class="card-header">📈 Accuracy Over Time</div>
+                <div class="card-body">
+                    <canvas id="accuracyChart"></canvas>
+                    <div id="chart1-empty" class="empty-state" style="display:none;"><div class="icon">📭</div><p>Log experiments to see charts.</p></div>
+                </div>
+            </div>
+        </div>
 
-        if (!model_id || !version_id) {
-            alert("Model ID and Version ID are required.");
-            return;
-        }
+        <!-- Model Comparison Bar -->
+        <div class="col-md-6 mb-4">
+            <div class="card chart-card-2" style="animation-delay:0.3s;">
+                <div class="card-header">🏆 Model Comparison (Avg Accuracy)</div>
+                <div class="card-body">
+                    <canvas id="modelChart"></canvas>
+                    <div id="chart2-empty" class="empty-state" style="display:none;"><div class="icon">📭</div><p>Log experiments to see comparison.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+<script>
+    // ── Toast ──────────────────────────────────────────────────────────────────
+    function showToast(message, type = 'info') {
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.className = `toast-msg ${type}`;
+        t.textContent = message;
+        c.appendChild(t);
+        setTimeout(() => { t.style.cssText = 'opacity:0;transform:translateX(30px);transition:all 0.3s;'; setTimeout(() => t.remove(), 300); }, 3500);
+    }
+
+    // ── Accuracy color ─────────────────────────────────────────────────────────
+    function accClass(v) {
+        if (v === null || v === undefined) return '';
+        if (v >= 0.9) return 'acc-good';
+        if (v >= 0.7) return 'acc-mid';
+        return 'acc-bad';
+    }
+
+    // ── Log Experiment ─────────────────────────────────────────────────────────
+    async function runExperiment() {
+        const model_id   = document.getElementById('model_id').value.trim();
+        const version_id = document.getElementById('version_id').value.trim();
+        const accuracy   = document.getElementById('accuracy').value.trim();
+        const loss       = document.getElementById('loss').value.trim();
+
+        if (!model_id || !version_id) { showToast('Model ID and Version ID are required.', 'error'); return; }
+
+        const btn = document.getElementById('submit-btn');
+        const txt = document.getElementById('submit-text');
+        btn.disabled = true;
+        txt.innerHTML = '<span class="spinner"></span> Logging...';
 
         try {
-            const response = await fetch("/experiments/run", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ model_id, version_id, accuracy, loss })
+            const res = await fetch('/experiments/run', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ model_id: +model_id, version_id: +version_id, accuracy: +accuracy, loss: +loss })
             });
-
-            if (response.ok) {
-                alert("Success: Experiment logged to SQL!");
-                loadExperiments(); // Refresh visual list
+            const result = await res.json();
+            if (res.ok) {
+                showToast('✅ Experiment logged!', 'success');
+                ['model_id','version_id','accuracy','loss'].forEach(id => document.getElementById(id).value = '');
+                await loadExperiments();
+                await loadCharts();
             } else {
-                alert("Error: Could not save experiment. Make sure the Model ID and Version ID actually exist in your database first.");
+                showToast('❌ ' + (result.error || 'Make sure Model ID and Version ID exist.'), 'error');
             }
-        } catch (error) {
-            alert("Network error: Make sure your Flask server is running.");
+        } catch { showToast('Network error — is the server running?', 'error'); }
+        finally { btn.disabled = false; txt.innerHTML = '📬 Submit Results'; }
+    }
+
+    // ── Load Experiments Table ─────────────────────────────────────────────────
+    async function loadExperiments() {
+        const tbody = document.getElementById('exp-tbody');
+        try {
+            const res  = await fetch('/experiments/');
+            const exps = await res.json();
+            if (exps.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">🧪</div><p>No experiments logged yet.</p></div></td></tr>`;
+                return;
+            }
+            tbody.innerHTML = exps.map(e => `
+                <tr>
+                    <td style="color:var(--text-muted);font-size:0.75rem;">#${e.experiment_id}</td>
+                    <td><span style="font-weight:600;color:var(--text-main);">${escHtml(e.model_name || '—')}</span><br><span style="font-size:0.73rem;color:var(--text-muted);">${escHtml(e.algorithm || '')}</span></td>
+                    <td style="font-size:0.8rem;">${escHtml(e.dataset_name || '—')}</td>
+                    <td><span style="background:rgba(99,102,241,0.15);color:#a5b4fc;padding:0.15rem 0.5rem;border-radius:100px;font-size:0.73rem;">v${e.version_number || '?'}</span></td>
+                    <td class="${accClass(e.accuracy)}">${e.accuracy !== null ? (e.accuracy * 100).toFixed(2) + '%' : '—'}</td>
+                    <td style="color:var(--text-muted);">${e.loss !== null ? e.loss : '—'}</td>
+                    <td style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">${e.run_date || '—'}</td>
+                </tr>`).join('');
+        } catch {
+            tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">❌</div><p>Failed to load experiments.</p></div></td></tr>`;
         }
     }
 
-    // Keep your existing loadExperiments() function here...
+    // ── Charts ─────────────────────────────────────────────────────────────────
+    let accuracyChartInst = null;
+    let modelChartInst    = null;
+
+    const chartDefaults = {
+        responsive: true,
+        plugins: {
+            legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, boxWidth: 10 } },
+            tooltip: { backgroundColor: 'rgba(15,23,42,0.9)', titleColor: '#f8fafc', bodyColor: '#94a3b8', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 }
+        },
+        scales: {
+            x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+        }
+    };
+
+    async function loadCharts() {
+        try {
+            const res  = await fetch('/experiments/analytics');
+            const data = await res.json();
+
+            // Chart 1 — Accuracy over time (line)
+            const ot = data.over_time || [];
+            if (ot.length > 0) {
+                document.getElementById('chart1-empty').style.display = 'none';
+                const labels = ot.map(r => r.run_date);
+                const accs   = ot.map(r => r.accuracy !== null ? (r.accuracy * 100).toFixed(2) : null);
+                const losses = ot.map(r => r.loss);
+                if (accuracyChartInst) accuracyChartInst.destroy();
+                accuracyChartInst = new Chart(document.getElementById('accuracyChart'), {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'Accuracy (%)', data: accs, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.12)', tension: 0.4, pointBackgroundColor: '#6366f1', pointRadius: 4, fill: true },
+                            { label: 'Loss', data: losses, borderColor: '#f472b6', backgroundColor: 'rgba(244,114,182,0.05)', tension: 0.4, pointBackgroundColor: '#f472b6', pointRadius: 4, fill: false, yAxisID: 'y' }
+                        ]
+                    },
+                    options: { ...chartDefaults }
+                });
+            } else {
+                document.getElementById('chart1-empty').style.display = 'block';
+                document.getElementById('accuracyChart').style.display = 'none';
+            }
+
+            // Chart 2 — Model Comparison (bar)
+            const mc = data.model_comparison || [];
+            if (mc.length > 0) {
+                document.getElementById('chart2-empty').style.display = 'none';
+                const colors = ['#6366f1','#22c55e','#f472b6','#fb923c','#38bdf8','#a78bfa'];
+                if (modelChartInst) modelChartInst.destroy();
+                modelChartInst = new Chart(document.getElementById('modelChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: mc.map(m => m.model_name),
+                        datasets: [{
+                            label: 'Avg Accuracy (%)',
+                            data: mc.map(m => m.avg_accuracy !== null ? (m.avg_accuracy * 100).toFixed(2) : 0),
+                            backgroundColor: mc.map((_, i) => colors[i % colors.length] + 'cc'),
+                            borderColor:     mc.map((_, i) => colors[i % colors.length]),
+                            borderWidth: 1.5, borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        ...chartDefaults,
+                        plugins: { ...chartDefaults.plugins, legend: { display: false } },
+                        scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, max: 100, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v + '%' } } }
+                    }
+                });
+            } else {
+                document.getElementById('chart2-empty').style.display = 'block';
+                document.getElementById('modelChart').style.display   = 'none';
+            }
+        } catch(e) { console.error('Chart load error:', e); }
+    }
+
+    function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    loadExperiments();
+    loadCharts();
 </script>
 </body>
 </html>
