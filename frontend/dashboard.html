@@ -55,9 +55,47 @@
         }
         .nav-links a:hover { color: var(--text-main); }
 
+        /* ── Navbar user pill ── */
+        .nav-user-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 100px;
+            padding: 0.35rem 0.9rem 0.35rem 0.5rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: default;
+            animation: fadeIn 0.4s ease;
+        }
+        .nav-user-pill .role-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        .role-dot.pm   { background: rgba(99,102,241,0.25); }
+        .role-dot.dev  { background: rgba(34,197,94,0.2); }
+        .nav-user-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .nav-logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            padding: 0;
+            margin-left: 0.4rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .nav-logout-btn:hover { color: #f87171; }
+
         /* ── Hero ── */
         .hero {
-            padding: 5rem 0 3rem;
+            padding: 4rem 0 2.5rem;
             text-align: center;
         }
         .hero-badge {
@@ -94,6 +132,184 @@
             margin: 0 auto 2rem;
             line-height: 1.7;
         }
+
+        /* ── Login Modal overlay ── */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+        .login-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(99,102,241,0.3);
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.15);
+            animation: scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .login-card-icon { font-size: 2.8rem; text-align: center; margin-bottom: 0.4rem; }
+        .login-card-title { font-size: 1.45rem; font-weight: 800; text-align: center; margin-bottom: 0.25rem; letter-spacing: -0.5px; }
+        .login-card-sub   { font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-bottom: 2rem; }
+        .login-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.4rem; display: block; }
+        .login-input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            padding: 0.8rem 1rem;
+            width: 100%;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        .login-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+        }
+        .login-input::placeholder { color: rgba(148,163,184,0.5); }
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 0.85rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -4px rgba(99,102,241,0.6);
+        }
+        .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .login-divider { border: none; border-top: 1px solid var(--border-color); margin: 1.5rem 0; }
+        .login-register-hint { text-align: center; font-size: 0.83rem; color: var(--text-muted); }
+        .login-register-hint a { color: #a5b4fc; text-decoration: none; font-weight: 600; }
+        .login-register-hint a:hover { text-decoration: underline; }
+
+        /* ── Role Banner (shown after login) ── */
+        .role-banner {
+            border-radius: 20px;
+            padding: 1.6rem 2rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .role-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            opacity: 0.08;
+        }
+        .role-banner.pm-banner {
+            background: rgba(99,102,241,0.12);
+            border: 1px solid rgba(99,102,241,0.35);
+        }
+        .role-banner.pm-banner::before { background: linear-gradient(135deg, #6366f1, #a855f7); }
+        .role-banner.dev-banner {
+            background: rgba(34,197,94,0.09);
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+        .role-banner.dev-banner::before { background: linear-gradient(135deg, #22c55e, #10b981); }
+
+        .role-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .pm-banner  .role-avatar { background: rgba(99,102,241,0.2);  border: 1px solid rgba(99,102,241,0.4); }
+        .dev-banner .role-avatar { background: rgba(34,197,94,0.15);  border: 1px solid rgba(34,197,94,0.35); }
+
+        .role-banner-info { flex: 1; }
+        .role-banner-greeting { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.2rem; }
+        .role-banner-name     { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.3rem; }
+        .role-banner-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.85rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .pm-tag  { background: rgba(99,102,241,0.2);  color: #a5b4fc; border: 1px solid rgba(99,102,241,0.4); }
+        .dev-tag { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.35); }
+        .role-banner-desc { font-size: 0.84rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.5; }
+
+        .role-perms {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .perm-chip {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.25rem 0.7rem;
+            border-radius: 100px;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .btn-switch-user {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.45rem 0.9rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-switch-user:hover { background: rgba(255,255,255,0.1); color: var(--text-main); }
+
+        /* ── Sign In button (shown when logged out) ── */
+        .btn-signin {
+            background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(79,70,229,0.3));
+            border: 1px solid rgba(99,102,241,0.4);
+            color: #a5b4fc;
+            border-radius: 10px;
+            padding: 0.45rem 1.1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            margin-left: 1rem;
+        }
+        .btn-signin:hover { background: rgba(99,102,241,0.4); color: #fff; }
 
         /* ── KPI Cards ── */
         .kpi-grid {
@@ -140,7 +356,6 @@
         .kpi-card:nth-child(3) { animation-delay: 0.19s; }
         .kpi-card:nth-child(4) { animation-delay: 0.26s; }
         .kpi-card:nth-child(5) { animation-delay: 0.33s; }
-        .kpi-card:nth-child(6) { animation-delay: 0.40s; }
 
         /* ── Nav Cards ── */
         .nav-cards {
@@ -269,6 +484,15 @@
             from { opacity: 0; transform: translateX(30px); }
             to   { opacity: 1; transform: translateX(0); }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.93) translateY(16px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .avg-badge {
             display: inline-flex;
@@ -283,9 +507,38 @@
             font-weight: 600;
             margin-top: 1rem;
         }
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
+
+<!-- ── Login Overlay (shown when not logged in) ── -->
+<div id="login-overlay" class="login-overlay" style="display:none;">
+    <div class="login-card">
+        <div class="login-card-icon">🔐</div>
+        <div class="login-card-title">Welcome Back</div>
+        <div class="login-card-sub">Enter your User ID to see your role and personalised dashboard.</div>
+
+        <label class="login-label" for="login-user-id">Your User ID</label>
+        <input id="login-user-id" class="login-input" type="number" min="1" placeholder="e.g. 3" autocomplete="off">
+
+        <button id="login-btn" class="login-btn" onclick="doLogin()">
+            <span id="login-btn-text">Sign In</span>
+        </button>
+
+        <hr class="login-divider">
+        <div class="login-register-hint">
+            New here? <a href="login.html">Register an account →</a>
+        </div>
+    </div>
+</div>
 
 <nav class="navbar navbar-dark mb-0">
     <div class="container d-flex justify-content-between align-items-center">
@@ -296,6 +549,16 @@
             <a href="experiments.html">Experiments</a>
             <a href="versions.html">Versions</a>
             <a href="login.html" class="btn-register ms-3">Register User</a>
+
+            <!-- Shown when NOT logged in -->
+            <button id="nav-signin-btn" class="btn-signin" onclick="showLoginOverlay()">Sign In</button>
+
+            <!-- Shown when logged in -->
+            <div id="nav-user-pill" class="nav-user-pill ms-2" style="display:none;">
+                <div id="nav-role-dot" class="role-dot"></div>
+                <span id="nav-user-name" class="nav-user-name"></span>
+                <button class="nav-logout-btn" title="Sign out" onclick="logout()">✕</button>
+            </div>
         </div>
     </div>
 </nav>
@@ -309,6 +572,9 @@
             <span class="avg-badge">📊 Avg Experiment Accuracy: <strong id="avg-acc-val">—</strong></span>
         </div>
     </div>
+
+    <!-- ── Role Banner (injected here after login) ── -->
+    <div id="role-banner-area"></div>
 
     <!-- KPI Stats -->
     <div class="section-label">Live Statistics</div>
@@ -379,22 +645,31 @@
 <div id="toast-container"></div>
 
 <script>
+    /* ────────────────────────────────────────────
+       Toast helper
+    ──────────────────────────────────────────── */
     function showToast(message, type = 'info') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = `toast-msg ${type}`;
         toast.textContent = message;
         container.appendChild(toast);
-        setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(30px)'; toast.style.transition = 'all 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(30px)';
+            toast.style.transition = 'all 0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 
+    /* ────────────────────────────────────────────
+       KPI animated counter
+    ──────────────────────────────────────────── */
     function animateCount(el, target, isFloat = false) {
         if (target === null || target === undefined) { el.textContent = '—'; return; }
         let current = 0;
-        const duration = 800;
-        const steps = 40;
-        const step = target / steps;
-        const interval = duration / steps;
+        const steps = 40, duration = 800;
+        const step = target / steps, interval = duration / steps;
         const timer = setInterval(() => {
             current = Math.min(current + step, target);
             el.textContent = isFloat ? current.toFixed(3) : Math.floor(current);
@@ -405,23 +680,162 @@
     async function loadStats() {
         try {
             const res = await fetch('/stats');
-            if (!res.ok) throw new Error('Stats fetch failed');
+            if (!res.ok) throw new Error();
             const s = await res.json();
-            animateCount(document.getElementById('stat-datasets'),    s.total_datasets);
-            animateCount(document.getElementById('stat-versions'),     s.total_versions);
-            animateCount(document.getElementById('stat-experiments'),  s.total_experiments);
-            animateCount(document.getElementById('stat-models'),       s.total_models);
-            animateCount(document.getElementById('stat-users'),        s.total_users);
+            animateCount(document.getElementById('stat-datasets'),   s.total_datasets);
+            animateCount(document.getElementById('stat-versions'),    s.total_versions);
+            animateCount(document.getElementById('stat-experiments'), s.total_experiments);
+            animateCount(document.getElementById('stat-models'),      s.total_models);
+            animateCount(document.getElementById('stat-users'),       s.total_users);
             if (s.avg_accuracy !== null) {
                 document.getElementById('avg-accuracy-badge').style.display = 'block';
                 document.getElementById('avg-acc-val').textContent = (s.avg_accuracy * 100).toFixed(1) + '%';
             }
-        } catch (e) {
+        } catch {
             showToast('Could not load stats — is the server running?', 'error');
         }
     }
 
-    loadStats();
+    /* ────────────────────────────────────────────
+       Role Banner builder
+    ──────────────────────────────────────────── */
+    function buildRoleBanner(user) {
+        const isPM = user.role === 'lead';
+        const roleLabel = isPM ? 'Project Manager' : 'Developer';
+        const roleEmoji = isPM ? '🔑' : '💻';
+        const tagClass  = isPM ? 'pm-tag'  : 'dev-tag';
+        const bannerClass = isPM ? 'pm-banner' : 'dev-banner';
+        const desc = isPM
+            ? 'As Project Manager, you have full access — create datasets, assign them to developers, and oversee all experiments and model runs.'
+            : 'As Developer, you can access datasets assigned to you, upload new versions, log experiments, and track model performance.';
+        const perms = isPM
+            ? ['Create Datasets', 'Assign to Developers', 'View All Data', 'Manage Users']
+            : ['Access Assigned Datasets', 'Upload Versions', 'Log Experiments', 'Track Models'];
+
+        const chipsHTML = perms.map(p => `<span class="perm-chip">✓ ${p}</span>`).join('');
+
+        return `
+        <div class="role-banner ${bannerClass}">
+            <div class="role-avatar">${roleEmoji}</div>
+            <div class="role-banner-info">
+                <div class="role-banner-greeting">Logged in as</div>
+                <div class="role-banner-name">${escapeHtml(user.name)}</div>
+                <span class="role-banner-tag ${tagClass}">${roleEmoji} ${roleLabel}</span>
+                <div class="role-banner-desc">${desc}</div>
+                <div class="role-perms">${chipsHTML}</div>
+            </div>
+            <button class="btn-switch-user" onclick="logout()">Switch User</button>
+        </div>`;
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ────────────────────────────────────────────
+       Navbar pill updater
+    ──────────────────────────────────────────── */
+    function updateNavbar(user) {
+        const isPM = user.role === 'lead';
+        document.getElementById('nav-signin-btn').style.display  = 'none';
+        const pill = document.getElementById('nav-user-pill');
+        pill.style.display = 'flex';
+        const dot = document.getElementById('nav-role-dot');
+        dot.className = 'role-dot ' + (isPM ? 'pm' : 'dev');
+        dot.textContent = isPM ? '🔑' : '💻';
+        document.getElementById('nav-user-name').textContent = user.name + ' · ' + (isPM ? 'PM' : 'Dev');
+    }
+
+    /* ────────────────────────────────────────────
+       Apply stored session (on page load)
+    ──────────────────────────────────────────── */
+    function applySession(user) {
+        document.getElementById('role-banner-area').innerHTML = buildRoleBanner(user);
+        updateNavbar(user);
+    }
+
+    /* ────────────────────────────────────────────
+       Login overlay
+    ──────────────────────────────────────────── */
+    function showLoginOverlay() {
+        const overlay = document.getElementById('login-overlay');
+        overlay.style.display = 'flex';
+        document.getElementById('login-user-id').focus();
+    }
+
+    function hideLoginOverlay() {
+        document.getElementById('login-overlay').style.display = 'none';
+    }
+
+    // Close overlay on backdrop click
+    document.getElementById('login-overlay').addEventListener('click', function(e) {
+        if (e.target === this) hideLoginOverlay();
+    });
+
+    document.getElementById('login-user-id').addEventListener('keydown', e => {
+        if (e.key === 'Enter') doLogin();
+    });
+
+    async function doLogin() {
+        const idInput = document.getElementById('login-user-id');
+        const userId  = idInput.value.trim();
+        if (!userId || isNaN(userId) || Number(userId) < 1) {
+            showToast('Please enter a valid User ID.', 'error');
+            return;
+        }
+        const btn  = document.getElementById('login-btn');
+        const txt  = document.getElementById('login-btn-text');
+        btn.disabled = true;
+        txt.innerHTML = '<span class="spinner"></span> Signing in…';
+
+        try {
+            const res  = await fetch(`/users/${userId}`);
+            if (res.status === 404) { showToast('User ID not found. Please check and try again.', 'error'); return; }
+            if (!res.ok) throw new Error();
+            const user = await res.json();
+
+            // Persist to sessionStorage
+            sessionStorage.setItem('ai_dm_user', JSON.stringify(user));
+
+            hideLoginOverlay();
+            applySession(user);
+            showToast(`Welcome back, ${user.name}! 👋`, 'success');
+        } catch {
+            showToast('Could not sign in — is the server running?', 'error');
+        } finally {
+            btn.disabled = false;
+            txt.textContent = 'Sign In';
+        }
+    }
+
+    /* ────────────────────────────────────────────
+       Logout
+    ──────────────────────────────────────────── */
+    function logout() {
+        sessionStorage.removeItem('ai_dm_user');
+        // Reset navbar
+        document.getElementById('nav-signin-btn').style.display = '';
+        document.getElementById('nav-user-pill').style.display  = 'none';
+        // Clear banner
+        document.getElementById('role-banner-area').innerHTML   = '';
+        showToast('Signed out successfully.', 'info');
+    }
+
+    /* ────────────────────────────────────────────
+       Boot: restore session if exists
+    ──────────────────────────────────────────── */
+    (function init() {
+        const raw = sessionStorage.getItem('ai_dm_user');
+        if (raw) {
+            try {
+                const user = JSON.parse(raw);
+                applySession(user);
+            } catch {
+                sessionStorage.removeItem('ai_dm_user');
+            }
+        }
+        loadStats();
+    })();
 </script>
 </body>
 </html>
