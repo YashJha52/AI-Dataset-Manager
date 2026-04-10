@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS Datasets (
     description  TEXT,
     created_by   INT,
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (created_by) REFERENCES Users(user_id)
+    FOREIGN KEY (created_by) REFERENCES Users(user_id),
+    FULLTEXT INDEX ft_dataset_search (dataset_name, description)
 );
 
 -- ========================
@@ -78,7 +79,6 @@ CREATE TABLE IF NOT EXISTS Dataset_Changes_Log (
 
 -- ========================
 -- Dataset Assignments
--- Team leads assign datasets to developers through this table.
 -- ========================
 CREATE TABLE IF NOT EXISTS Dataset_Assignments (
     assignment_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -86,30 +86,14 @@ CREATE TABLE IF NOT EXISTS Dataset_Assignments (
     assigned_to   INT NOT NULL,          -- developer user_id
     assigned_by   INT NOT NULL,          -- lead user_id
     assigned_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY uq_assignment (dataset_id, assigned_to),  -- no duplicate assignments
+    UNIQUE KEY uq_assignment (dataset_id, assigned_to),
     FOREIGN KEY (dataset_id)  REFERENCES Datasets(dataset_id)  ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES Users(user_id),
     FOREIGN KEY (assigned_by) REFERENCES Users(user_id)
 );
 
 -- ========================
--- INDEXES
--- ========================
-CREATE INDEX IF NOT EXISTS idx_versions_dataset    ON Dataset_Versions(dataset_id);
-CREATE INDEX IF NOT EXISTS idx_experiments_version ON Experiments(version_id);
-CREATE INDEX IF NOT EXISTS idx_experiments_model   ON Experiments(model_id);
-CREATE INDEX IF NOT EXISTS idx_log_version         ON Dataset_Changes_Log(version_id);
-CREATE INDEX IF NOT EXISTS idx_datasets_created_by ON Datasets(created_by);
-CREATE INDEX IF NOT EXISTS idx_assignments_user    ON Dataset_Assignments(assigned_to);
-CREATE INDEX IF NOT EXISTS idx_assignments_dataset ON Dataset_Assignments(dataset_id);
-
--- ========================
--- FULLTEXT INDEX
--- ========================
-ALTER TABLE Datasets ADD FULLTEXT INDEX IF NOT EXISTS ft_dataset_search (dataset_name, description);
-
--- ========================
--- VIEW: Dataset Summary (with assignment count)
+-- VIEW: Dataset Summary
 -- ========================
 CREATE OR REPLACE VIEW vw_dataset_summary AS
 SELECT
@@ -149,7 +133,6 @@ JOIN Models m           ON e.model_id   = m.model_id;
 
 -- ========================
 -- VIEW: Developer Assignments
--- Quick lookup of what each developer is assigned to.
 -- ========================
 CREATE OR REPLACE VIEW vw_developer_assignments AS
 SELECT
@@ -158,22 +141,22 @@ SELECT
     d.dataset_id,
     d.dataset_name,
     d.description,
-    dev.user_id  AS developer_id,
-    dev.name     AS developer_name,
-    dev.email    AS developer_email,
-    lead.user_id AS lead_id,
-    lead.name    AS lead_name,
+    dev.user_id       AS developer_id,
+    dev.name          AS developer_name,
+    dev.email         AS developer_email,
+    team_lead.user_id AS lead_id,
+    team_lead.name    AS lead_name,
     MAX(v.version_number) AS current_version,
     (SELECT storage_path FROM Dataset_Versions
      WHERE dataset_id = d.dataset_id
      ORDER BY version_number DESC LIMIT 1) AS storage_path
 FROM Dataset_Assignments a
-JOIN Datasets d         ON a.dataset_id  = d.dataset_id
-JOIN Users dev          ON a.assigned_to = dev.user_id
-JOIN Users lead         ON a.assigned_by = lead.user_id
-LEFT JOIN Dataset_Versions v ON d.dataset_id = v.dataset_id
+JOIN Datasets d              ON a.dataset_id  = d.dataset_id
+JOIN Users dev               ON a.assigned_to = dev.user_id
+JOIN Users team_lead         ON a.assigned_by = team_lead.user_id
+LEFT JOIN Dataset_Versions v ON d.dataset_id  = v.dataset_id
 GROUP BY a.assignment_id, d.dataset_id, d.dataset_name, d.description,
-         dev.user_id, dev.name, dev.email, lead.user_id, lead.name, a.assigned_at;
+         dev.user_id, dev.name, dev.email, team_lead.user_id, team_lead.name, a.assigned_at;
 
 -- ========================
 -- TRIGGER: Auto-log new versions
