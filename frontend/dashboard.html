@@ -576,6 +576,14 @@
     <!-- ── Role Banner (injected here after login) ── -->
     <div id="role-banner-area"></div>
 
+    <!-- ── Assigned Datasets (only for Developers) ── -->
+    <div id="dev-assigned-area" style="display:none; margin-bottom: 3rem;">
+        <div class="section-label">My Assigned Datasets</div>
+        <div id="dev-assigned-list" class="nav-cards" style="margin-bottom: 0;">
+            <!-- Injected via JS -->
+        </div>
+    </div>
+
     <!-- KPI Stats -->
     <div class="section-label">Live Statistics</div>
     <div class="kpi-grid">
@@ -752,6 +760,36 @@
     function applySession(user) {
         document.getElementById('role-banner-area').innerHTML = buildRoleBanner(user);
         updateNavbar(user);
+        if (user.role === 'developer') {
+            loadMyAssignedDatasets(user.user_id);
+        } else {
+            document.getElementById('dev-assigned-area').style.display = 'none';
+        }
+    }
+
+    async function loadMyAssignedDatasets(userId) {
+        const area = document.getElementById('dev-assigned-area');
+        const list = document.getElementById('dev-assigned-list');
+        try {
+            const res = await fetch(`/datasets/my/${userId}`);
+            const datasets = await res.json();
+            if (datasets.length > 0) {
+                area.style.display = 'block';
+                list.innerHTML = datasets.map(d => `
+                    <a href="datasets.html" class="nav-card">
+                        <div class="nav-card-icon">📦</div>
+                        <h3>${escapeHtml(d.dataset_name)}</h3>
+                        <p>${escapeHtml(d.description || 'No description')}</p>
+                        <div class="chip version mt-2" style="background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.3); color:#a5b4fc; padding:0.2rem 0.6rem; border-radius:100px; font-size:0.7rem; align-self:flex-start;">v${d.version_number || 1}</div>
+                        <div class="arrow">→</div>
+                    </a>
+                `).join('');
+            } else {
+                area.style.display = 'none';
+            }
+        } catch (e) {
+            console.error('Failed to load assigned datasets', e);
+        }
     }
 
     /* ────────────────────────────────────────────
@@ -816,8 +854,9 @@
         // Reset navbar
         document.getElementById('nav-signin-btn').style.display = '';
         document.getElementById('nav-user-pill').style.display  = 'none';
-        // Clear banner
+        // Clear banner and dev area
         document.getElementById('role-banner-area').innerHTML   = '';
+        document.getElementById('dev-assigned-area').style.display = 'none';
         showToast('Signed out successfully.', 'info');
     }
 

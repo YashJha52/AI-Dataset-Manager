@@ -188,6 +188,19 @@
     }
 
     function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // ─── Boot: restore session if exists ─────────────────────────────────────────
+    (function init() {
+        const raw = sessionStorage.getItem('ai_dm_user');
+        if (raw) {
+            try {
+                const user = JSON.parse(raw);
+                console.log('Versions sync: session found for', user.name);
+            } catch {
+                sessionStorage.removeItem('ai_dm_user');
+            }
+        }
+    })();
     loadVersions();
 </script>
 </body>

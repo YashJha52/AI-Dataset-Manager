@@ -124,7 +124,7 @@ def get_datasets():
                 WHERE dataset_id = d.dataset_id ORDER BY version_number DESC LIMIT 1) as storage_path
         FROM Datasets d
         LEFT JOIN Dataset_Versions v ON d.dataset_id = v.dataset_id
-        GROUP BY d.dataset_id
+        GROUP BY d.dataset_id, d.dataset_name, d.description, d.created_by
     """)
     datasets = cursor.fetchall()
     cursor.close()
@@ -150,7 +150,8 @@ def get_my_datasets(user_id):
             JOIN Users lead         ON a.assigned_by = lead.user_id
             LEFT JOIN Dataset_Versions v ON d.dataset_id = v.dataset_id
             WHERE a.assigned_to = %s
-            GROUP BY d.dataset_id, a.assignment_id, lead.name, a.assigned_at
+            GROUP BY d.dataset_id, d.dataset_name, d.description, d.created_by,
+                     a.assignment_id, a.assigned_at, lead.name
         """, (user_id,))
         datasets = cursor.fetchall()
         # Convert datetime to string

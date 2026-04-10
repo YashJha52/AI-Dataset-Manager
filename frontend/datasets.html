@@ -296,16 +296,21 @@ function showToast(message, type='info') {
 function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 // ─── Session Load ────────────────────────────────────────────────────────────
-async function loadSession() {
-    const userId = document.getElementById('session-user-id').value.trim();
+async function loadSession(userIdFromSession = null) {
+    const userIdInput = document.getElementById('session-user-id');
+    const userId = userIdFromSession || userIdInput.value.trim();
     if (!userId) { showToast('Enter your User ID first.', 'error'); return; }
 
     try {
         const res  = await fetch(`/users/${userId}`);
         const user = await res.json();
-        if (!res.ok) { showToast('User not found. Check your User ID.', 'error'); return; }
+        if (!res.ok) { 
+            if (!userIdFromSession) showToast('User not found. Check your User ID.', 'error'); 
+            return; 
+        }
 
         currentUser = user;
+        userIdInput.value = user.user_id;
 
         // Update session bar
         document.getElementById('session-info').style.display = 'flex';
@@ -583,6 +588,19 @@ function debounceSearch(){
     clearTimeout(searchTimer);
     searchTimer=setTimeout(()=>loadDatasets(document.getElementById('search-input').value.trim()),350);
 }
+
+// ─── Boot: restore session if exists ─────────────────────────────────────────
+(function init() {
+    const raw = sessionStorage.getItem('ai_dm_user');
+    if (raw) {
+        try {
+            const user = JSON.parse(raw);
+            loadSession(user.user_id);
+        } catch {
+            sessionStorage.removeItem('ai_dm_user');
+        }
+    }
+})();
 </script>
 </body>
 </html>
